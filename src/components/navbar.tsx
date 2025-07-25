@@ -30,13 +30,7 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500">
-                <Music className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                STARX
-              </span>
-              <Sparkles className="h-4 w-4 text-yellow-500" />
+              <img className="w-25" src="/images/starx.png" alt="starx"/>
             </Link>
 
             <div className="hidden md:flex items-center space-x-6">
@@ -46,8 +40,8 @@ export function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-blue-600 ${
-                      pathname === item.href ? "text-blue-600 font-semibold" : "text-gray-600"
+                    className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-yellow-600 ${
+                      pathname === item.href ? "text-yellow-600 font-semibold" : "text-gray-600"
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -62,7 +56,7 @@ export function Navbar() {
             {!isConnected ? (
               <Button
                 onClick={connectWallet}
-                className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0"
+                className="flex items-center space-x-2 bg-gradient-to-r from-gray-500 to-gray-400 hover:from-gray-600 hover:to-gray-600 text-white border-0"
               >
                 <Wallet className="h-4 w-4" />
                 <span>Connect Wallet</span>
@@ -70,9 +64,9 @@ export function Navbar() {
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-blue-50">
+                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-50">
                     <Avatar className="h-8 w-8 border-2 border-blue-200">
-                      <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                      <AvatarFallback className="bg-gradient-to-r from-gray-500 to-gray-500 text-white">
                         {user?.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
@@ -88,7 +82,7 @@ export function Navbar() {
                   </DropdownMenuItem>
                   {user?.isArtist && (
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="flex items-center text-gray-700 hover:text-blue-600">
+                      <Link href="/dashboard" className="flex items-center text-gray-700 hover:text-gray-600">
                         <LayoutDashboard className="mr-2 h-4 w-4" />
                         Artist Dashboard
                       </Link>

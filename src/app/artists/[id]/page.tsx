@@ -10,63 +10,151 @@ import { Progress } from "@/components/ui/progress"
 import { useWallet } from "@/app/providers"
 import { Star, Users, Clock, Music, ShoppingBag, Calendar, Award } from "lucide-react"
 
+// Define types
+interface Benefit {
+  id: number
+  title: string
+  description: string
+  requiredTokens: number
+  type: "purchase" | "hold"
+  holdPeriod?: string
+  icon: any
+  color: string
+}
+
+interface Artist {
+  id: string
+  name: string
+  genre: string
+  bio: string
+  tokenPrice: number
+  totalTokens: number
+  soldTokens: number
+  image: string
+  coverImage: string
+  rating: number
+  totalHolders: number
+  benefits: Benefit[]
+  stats: {
+    totalVolume: string
+    avgHoldTime: string
+    topHolder: string
+  }
+}
+
 // Mock data - in real app, this would come from API
-const artistData = {
-  "1": {
-    id: "1",
-    name: "Luna Eclipse",
-    genre: "Electronic",
-    bio: "Luna Eclipse is a pioneering electronic music artist known for her ethereal soundscapes and innovative use of synthesizers. With over 5 years in the industry, she has performed at major festivals worldwide.",
-    tokenPrice: 0.1,
+const artistData: Record<string, Artist> = {
+  "taylor-swift": {
+    id: "taylor-swift",
+    name: "Taylor Swift",
+    genre: "Pop",
+    bio: "Taylor Swift is a global superstar known for her storytelling songwriting and genre-spanning discography. With multiple Grammy wins and record-breaking albums, she continues to redefine the music industry.",
+    tokenPrice: 0.25,
     totalTokens: 10000,
     soldTokens: 7500,
-    image: "/placeholder.svg?height=400&width=400",
-    coverImage: "/placeholder.svg?height=300&width=800",
-    rating: 4.8,
-    totalHolders: 2341,
+    image: "/images/taylor.jpg",
+    coverImage: "/images/taylor.jpg",
+    rating: 4.9,
+    totalHolders: 125000,
     benefits: [
       {
         id: 1,
-        title: "Early Access Tier",
-        description: "Get early access to new releases 48 hours before public",
+        title: "Early Access to New Albums",
+        description: "Get access to new releases 48 hours before public launch",
         requiredTokens: 10,
         type: "purchase",
         icon: Music,
-        color: "bg-blue-500",
+        color: "bg-gray-500",
       },
       {
         id: 2,
-        title: "Exclusive Merch",
-        description: "Free limited edition merchandise drops",
+        title: "Exclusive Merchandise Drops",
+        description: "Limited edition Taylor Swift merchandise collections",
         requiredTokens: 25,
         type: "purchase",
         icon: ShoppingBag,
-        color: "bg-purple-500",
+        color: "bg-gray-500",
       },
       {
         id: 3,
-        title: "VIP Concert Access",
-        description: "Priority booking for concerts and meet & greet",
+        title: "VIP Concert Tickets",
+        description: "Priority access to concert tickets and VIP experiences",
         requiredTokens: 50,
         type: "purchase",
         icon: Calendar,
-        color: "bg-green-500",
+        color: "bg-gray-500",
       },
       {
         id: 4,
-        title: "Diamond Holder",
-        description: "Exclusive studio sessions and personalized content",
-        requiredTokens: 100,
-        type: "hold",
-        holdPeriod: "6 months",
+        title: "Behind-the-Scenes Content",
+        description: "Exclusive studio footage and creative process insights",
+        requiredTokens: 75,
+        type: "purchase",
         icon: Award,
-        color: "bg-yellow-500",
+        color: "bg-gray-500",
       },
     ],
     stats: {
-      totalVolume: "750 ETH",
-      avgHoldTime: "4.2 months",
-      topHolder: "1,250 tokens",
+      totalVolume: "1,250 ETH",
+      avgHoldTime: "6.2 months",
+      topHolder: "2,150 tokens",
+    },
+  },
+  "ariana-grande": {
+    id: "ariana-grande",
+    name: "Ariana Grande",
+    genre: "Pop/R&B",
+    bio: "Ariana Grande is known for her powerful vocals and impressive range. With multiple platinum albums and Grammy wins, she's one of the most influential artists of her generation.",
+    tokenPrice: 0.22,
+    totalTokens: 12000,
+    soldTokens: 9500,
+    image: "/images/ariana.webp",
+    coverImage: "/images/ariana.webp",
+    rating: 4.8,
+    totalHolders: 110000,
+    benefits: [
+      {
+        id: 1,
+        title: "Exclusive Vocal Lessons",
+        description: "Learn vocal techniques from Ariana's vocal coach",
+        requiredTokens: 15,
+        type: "purchase",
+        icon: Music,
+        color: "bg-gray-500",
+      },
+      {
+        id: 2,
+        title: "Limited Edition Perfume",
+        description: "Early access to new fragrance collections",
+        requiredTokens: 35,
+        type: "purchase",
+        icon: ShoppingBag,
+        color: "bg-gray-500",
+      },
+      {
+        id: 3,
+        title: "Backstage Access",
+        description: "Meet Ariana backstage at concerts",
+        requiredTokens: 70,
+        type: "purchase",
+        icon: Calendar,
+        color: "bg-gray-500",
+      },
+      {
+        id: 4,
+        title: "Collaboration Opportunities",
+        description: "Chance to collaborate on special projects",
+        requiredTokens: 150,
+        type: "hold",
+        holdPeriod: "6 months",
+        icon: Award,
+        color: "bg-gray-500",
+      },
+    ],
+    stats: {
+      totalVolume: "1,100 ETH",
+      avgHoldTime: "5.5 months",
+      topHolder: "1,950 tokens",
     },
   },
 }
@@ -77,10 +165,17 @@ export default function ArtistDetailPage() {
   const [tokenAmount, setTokenAmount] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
 
-  const artist = artistData[params.id as string]
+  // Safe access with proper typing
+  const artistId = params.id as string
+  const artist = artistData[artistId]
 
   if (!artist) {
-    return <div>Artist not found</div>
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-2">Artist not found</h2>
+        <p className="text-gray-600">The artist you're looking for doesn't exist.</p>
+      </div>
+    )
   }
 
   const handleBuyTokens = async () => {
@@ -92,7 +187,9 @@ export default function ArtistDetailPage() {
     setIsLoading(false)
 
     // Show success message
-    alert(`Successfully purchased ${tokenAmount} tokens for ${(tokenAmount * artist.tokenPrice).toFixed(3)} ETH!`)
+    alert(
+      `Successfully purchased ${tokenAmount} ${artist.name} tokens for ${(tokenAmount * artist.tokenPrice).toFixed(3)} ETH!`,
+    )
   }
 
   const totalCost = tokenAmount * artist.tokenPrice
@@ -100,26 +197,6 @@ export default function ArtistDetailPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-        Artist Details
-      </h1>
-
-      <Card className="bg-white/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle>Artist Information</CardTitle>
-          <CardDescription>Detailed information about this artist</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-600 mb-4">Artist details will be displayed here.</p>
-          <Button
-            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-            disabled={!isConnected}
-          >
-            {!isConnected ? "Connect Wallet" : "Buy Tokens"}
-          </Button>
-        </CardContent>
-      </Card>
-
       {/* Hero Section */}
       <div className="relative rounded-lg overflow-hidden">
         <img
