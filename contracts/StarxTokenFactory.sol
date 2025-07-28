@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./ArtistMembershipToken.sol";
+import "./StarxMembershipToken";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ArtistTokenFactory is Ownable {
     mapping(address => bool) public approvedArtists;
     mapping(address => address) public artistToToken;
     
-    uint256 public defaultTokenPrice = 0.001 ether; // Default price: 1 token = 0.001 ETH
-
+    uint256 public defaultTokenPrice = 0.001 ether;
+    
     event ArtistApproved(address artist);
     event TokenCreated(address artist, address tokenAddress, uint256 tokenPrice);
     event DefaultPriceUpdated(uint256 oldPrice, uint256 newPrice);

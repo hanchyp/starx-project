@@ -25,7 +25,7 @@ contract ArtistMembershipToken is ERC20, Ownable {
         string memory _name,
         string memory _symbol,
         uint256 _initialSupply,
-        uint256 _tokenPrice, // Add token price parameter
+        uint256 _tokenPrice,
         address _owner
     ) ERC20(_name, _symbol) {
         _mint(_owner, _initialSupply * 10 ** decimals());
