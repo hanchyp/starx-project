@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./StarxMembershipToken";
+import "./StarxMembershipToken.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ArtistTokenFactory is Ownable {

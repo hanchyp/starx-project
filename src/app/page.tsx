@@ -1,11 +1,14 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { useWallet } from "./providers"
 import { ArtistCoinCarousel } from "@/components/artist-coin-carousel"
+import Link from "next/link"
+import { useActiveAccount } from "thirdweb/react"
+import { ConnectButton } from "thirdweb/react"
+import { client, chain } from "./client"
 
 export default function HomePage() {
-  const { isConnected } = useWallet()
+  const account = useActiveAccount()
 
   return (
     <div className="space-y-20">
@@ -24,17 +27,36 @@ export default function HomePage() {
           </p>
         </div>
 
-        {!isConnected && (
+        {!account && (
+          <>
+            <div className="flex justify-center mt-12">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg rounded-xl font-medium"
+                onClick={() => {
+                  const el = document.getElementById("artists")
+                  if (el) el.scrollIntoView({ behavior: "smooth" })
+                }}
+              >
+                Explore Artists
+              </Button>
+            </div>
+
+            <div className="flex justify-center mt-6">
+              <ConnectButton client={client} chain={chain} />
+            </div>
+          </>
+        )}
+
+        {account && (
           <div className="flex justify-center mt-12">
             <Button
               size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 text-lg rounded-xl font-medium"
-              onClick={() => {
-                const el = document.getElementById("artists")
-                if (el) el.scrollIntoView({ behavior: "smooth" })
-              }}
+              variant="outline"
+              className="px-8 py-4 text-lg rounded-xl font-medium"
+              asChild
             >
-              Explore Artists
+              <Link href="/dashboard">Go to Dashboard</Link>
             </Button>
           </div>
         )}
