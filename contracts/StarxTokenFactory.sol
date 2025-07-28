@@ -1,83 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+<<<<<<< Updated upstream:contracts/StarxTokenFactory.sol
 import "./StarxMembershipToken";
 import "@openzeppelin/contracts/access/Ownable.sol";
+=======
+import "./StarxToken.sol";
+>>>>>>> Stashed changes:src/StarxTokenFactory.sol
 
-contract ArtistTokenFactory is Ownable {
-    mapping(address => bool) public approvedArtists;
-    mapping(address => address) public artistToToken;
-    
-    uint256 public defaultTokenPrice = 0.001 ether;
-    
-    event ArtistApproved(address artist);
-    event TokenCreated(address artist, address tokenAddress, uint256 tokenPrice);
-    event DefaultPriceUpdated(uint256 oldPrice, uint256 newPrice);
+contract StarxTokenFactory {
+    address[] public allTokens;
 
-    constructor(uint256 _defaultTokenPrice) {
-        defaultTokenPrice = _defaultTokenPrice;
-    }
+    event StarxTokenCreated(address indexed artist, address tokenAddress);
 
-    function approveArtist(address artist) external onlyOwner {
-        approvedArtists[artist] = true;
-        emit ArtistApproved(artist);
-    }
-
-    function createToken(
+    function createStarxToken(
         string memory name,
         string memory symbol,
-        uint256 initialSupply,
-        uint256 tokenPrice // Artist can set custom price
+        uint256 cap,
+        uint256 tokenPriceInWei
     ) external {
-        require(approvedArtists[msg.sender], "Not approved as artist");
-        require(artistToToken[msg.sender] == address(0), "Already created");
-        require(tokenPrice > 0, "Token price must be greater than 0");
-
-        ArtistMembershipToken token = new ArtistMembershipToken(
-            name,
-            symbol,
-            initialSupply,
-            tokenPrice,
-            msg.sender
-        );
-
-        artistToToken[msg.sender] = address(token);
-        emit TokenCreated(msg.sender, address(token), tokenPrice);
-    }
-    
-    
-    function createToken(
-        string memory name,
-        string memory symbol,
-        uint256 initialSupply
-    ) external {
-        require(approvedArtists[msg.sender], "Not approved as artist");
-        require(artistToToken[msg.sender] == address(0), "Already created");
-
-        ArtistMembershipToken token = new ArtistMembershipToken(
-            name,
-            symbol,
-            initialSupply,
-            defaultTokenPrice,
-            msg.sender
-        );
-
-        artistToToken[msg.sender] = address(token);
-        emit TokenCreated(msg.sender, address(token), defaultTokenPrice);
+        StarxToken token = new StarxToken(name, symbol, cap, tokenPriceInWei, msg.sender);
+        allTokens.push(address(token));
+        emit StarxTokenCreated(msg.sender, address(token));
     }
 
-    function setDefaultTokenPrice(uint256 _newPrice) external onlyOwner {
-        require(_newPrice > 0, "Price must be greater than 0");
-        uint256 oldPrice = defaultTokenPrice;
-        defaultTokenPrice = _newPrice;
-        emit DefaultPriceUpdated(oldPrice, _newPrice);
-    }
 
-    function getMyToken() public view returns (address) {
-        return artistToToken[msg.sender];
-    }
-    
-    function getArtistToken(address artist) public view returns (address) {
-        return artistToToken[artist];
+    function getAllTokens() external view returns (address[] memory) {
+        return allTokens;
     }
 }
