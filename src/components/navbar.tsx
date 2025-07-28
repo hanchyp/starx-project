@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useWallet } from "@/app/providers"
-import { Wallet, User, Music, Gift, LayoutDashboard, Home, LogOut, Sparkles } from "lucide-react"
+import { Wallet, User, Music, Gift, LayoutDashboard, Home, LogOut } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,30 +25,26 @@ export function Navbar() {
   ]
 
   return (
-    <nav className="border-b bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50 border-blue-100">
-      <div className="container mx-auto px-4">
+    <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="container mx-auto px-6">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2">
-              <img className="w-25" src="/images/starx.png" alt="starx"/>
+          <div className="flex items-center space-x-12">
+            <Link href="/" className="flex items-center">
+              <div className="text-2xl font-light text-foreground">STARX</div>
             </Link>
 
-            <div className="hidden md:flex items-center space-x-6">
-              {navigation.map((item) => {
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`flex items-center space-x-1 text-sm font-medium transition-colors hover:text-yellow-600 ${
-                      pathname === item.href ? "text-yellow-600 font-semibold" : "text-gray-600"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.name}</span>
-                  </Link>
-                )
-              })}
+            <div className="hidden md:flex items-center space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`text-sm font-medium transition-colors hover:text-foreground ${
+                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -56,7 +52,7 @@ export function Navbar() {
             {!isConnected ? (
               <Button
                 onClick={connectWallet}
-                className="flex items-center space-x-2 bg-gradient-to-r from-gray-500 to-gray-400 hover:from-gray-600 hover:to-gray-600 text-white border-0"
+                className="flex items-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-xl px-6 h-10"
               >
                 <Wallet className="h-4 w-4" />
                 <span>Connect Wallet</span>
@@ -64,26 +60,29 @@ export function Navbar() {
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-50">
-                    <Avatar className="h-8 w-8 border-2 border-blue-200">
-                      <AvatarFallback className="bg-gradient-to-r from-gray-500 to-gray-500 text-white">
+                  <Button variant="ghost" className="flex items-center space-x-3 hover:bg-muted rounded-xl px-4 h-10">
+                    <Avatar className="h-7 w-7 border border-border">
+                      <AvatarFallback className="bg-muted text-muted-foreground text-sm">
                         {user?.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden md:block text-gray-700">{user?.name}</span>
+                    <span className="hidden md:block text-foreground font-medium">{user?.name}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-md border-blue-100">
+                <DropdownMenuContent align="end" className="w-56 bg-popover border-border rounded-xl shadow-lg">
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center text-gray-700 hover:text-blue-600">
-                      <User className="mr-2 h-4 w-4" />
+                    <Link href="/profile" className="flex items-center text-popover-foreground hover:text-foreground">
+                      <User className="mr-3 h-4 w-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
                   {user?.isArtist && (
                     <DropdownMenuItem asChild>
-                      <Link href="/dashboard" className="flex items-center text-gray-700 hover:text-gray-600">
-                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center text-popover-foreground hover:text-foreground"
+                      >
+                        <LayoutDashboard className="mr-3 h-4 w-4" />
                         Artist Dashboard
                       </Link>
                     </DropdownMenuItem>
@@ -93,7 +92,7 @@ export function Navbar() {
                     onClick={disconnectWallet}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-3 h-4 w-4" />
                     Disconnect
                   </DropdownMenuItem>
                 </DropdownMenuContent>

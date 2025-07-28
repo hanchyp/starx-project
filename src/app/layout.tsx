@@ -1,25 +1,19 @@
 import type React from "react"
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
 import { Providers } from "./providers"
 import { Navbar } from "@/components/navbar"
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
-  title: "STARX",
-  description: "Buy artist tokens and unlock exclusive benefits",
+  title: "STARX - Artist Token Platform",
+  description: "Invest in artist tokens and unlock exclusive experiences with your favorite musicians",
 }
 
 export default function RootLayout({
@@ -31,9 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <div className="min-h-screen">
+          <div className="min-h-screen bg-background">
             <Navbar />
-            <main className="container mx-auto px-4 py-8">{children}</main>
+            <main className="container mx-auto px-6 py-8">{children}</main>
           </div>
         </Providers>
       </body>

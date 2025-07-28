@@ -13,8 +13,7 @@ const artistCoins = [
     price: 0.25,
     change: "+15.2%",
     isPositive: true,
-    image: "/images/taylor.jpg",
-    gradient: "from-gray-400 via-gray-400 to-gray-400",
+    image: "/placeholder.svg?height=400&width=320",
     benefits: [
       "Early access to new albums",
       "Exclusive merchandise drops",
@@ -31,38 +30,49 @@ const artistCoins = [
     price: 0.22,
     change: "+12.4%",
     isPositive: true,
-    image: "/images/ariana.webp",
-    gradient: "from-gray-400 via-gray-400 to-gray-400",
+    image: "/placeholder.svg?height=400&width=320",
+    benefits: [
+      "Exclusive music previews",
+      "Limited edition merchandise",
+      "Concert pre-sale access",
+      "Personal video messages",
+      "Studio session access",
+    ],
   },
   {
-    id: "taylor-swift",
-    name: "Taylor Swift",
-    symbol: "TAYLOR",
-    price: 0.25,
-    change: "+15.2%",
+    id: "the-weeknd",
+    name: "The Weeknd",
+    symbol: "WEEKND",
+    price: 0.31,
+    change: "+8.7%",
     isPositive: true,
-    image: "/images/taylor.jpg",
-    gradient: "from-pink-400 via-grey-400 to-indigo-400",
+    image: "/placeholder.svg?height=400&width=320",
+    benefits: ["Unreleased track access", "VIP event invitations", "Signed vinyl records", "Backstage passes"],
   },
   {
-    id: "ariana-grande",
-    name: "Ariana Grande",
-    symbol: "ARIANA",
-    price: 0.22,
-    change: "+12.4%",
-    isPositive: true,
-    image: "/images/ariana.webp",
-    gradient: "from-gray-400 via-gray-400 to-gray-400",
+    id: "billie-eilish",
+    name: "Billie Eilish",
+    symbol: "BILLIE",
+    price: 0.28,
+    change: "-2.1%",
+    isPositive: false,
+    image: "/placeholder.svg?height=400&width=320",
+    benefits: [
+      "Exclusive documentary access",
+      "Limited merch drops",
+      "Meet & greet opportunities",
+      "Studio visit passes",
+    ],
   },
   {
-    id: "taylor-swift",
-    name: "Taylor Swift",
-    symbol: "TAYLOR",
-    price: 0.25,
-    change: "+15.2%",
+    id: "drake",
+    name: "Drake",
+    symbol: "DRAKE",
+    price: 0.35,
+    change: "+11.3%",
     isPositive: true,
-    image: "/images/taylor.jpg",
-    gradient: "from-pink-400 via-grey-400 to-indigo-400",
+    image: "/placeholder.svg?height=400&width=320",
+    benefits: ["OVO merchandise access", "Concert VIP packages", "Exclusive playlist features", "Personal shoutouts"],
   },
 ]
 
@@ -73,7 +83,7 @@ export function ArtistCoinCarousel() {
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const scrollAmount = 320
+      const scrollAmount = 280
       const newScrollLeft = scrollRef.current.scrollLeft + (direction === "right" ? scrollAmount : -scrollAmount)
 
       scrollRef.current.scrollTo({
@@ -92,69 +102,97 @@ export function ArtistCoinCarousel() {
   }
 
   return (
-    <div className="relative">
-      <div className="flex flex-col items-center justify-center text-center mb-10">
-        <div>
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-600 to-gray-600 bg-clip-text text-transparent">
-            Trending Artist
-          </h2>
-          <p className="text-gray-600 mt-1">Invest in your favorite artists and unlock exclusive benefits</p>
-        </div>
-        <div className="flex space-x-2"></div>
+    <div className="relative max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="text-center mb-16">
+        <h2 className="text-3xl font-light text-foreground mb-3">Trending Artists</h2>
+        <p className="text-muted-foreground text-lg font-light max-w-2xl mx-auto">
+          Discover and invest in your favorite artists
+        </p>
       </div>
 
+      {/* Navigation Buttons */}
+      <div className="absolute top-1/2 -translate-y-1/2 -left-6 z-10">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => scroll("left")}
+          disabled={!canScrollLeft}
+          className="h-12 w-12 rounded-full border-border bg-background/80 backdrop-blur-sm hover:bg-background hover:border-border disabled:opacity-30 shadow-sm"
+        >
+          <ChevronLeft className="h-5 w-5 text-foreground" />
+        </Button>
+      </div>
+
+      <div className="absolute top-1/2 -translate-y-1/2 -right-6 z-10">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => scroll("right")}
+          disabled={!canScrollRight}
+          className="h-12 w-12 rounded-full border-border bg-background/80 backdrop-blur-sm hover:bg-background hover:border-border disabled:opacity-30 shadow-sm"
+        >
+          <ChevronRight className="h-5 w-5 text-foreground" />
+        </Button>
+      </div>
+
+      {/* Carousel */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex space-x-4 overflow-x-auto scrollbar-hide pb-4"
+        className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 px-1"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {artistCoins.map((artist, index) => (
-          <Link key={artist.id} href={`/artists/${artist.id}`} className="flex-shrink-0 group cursor-pointer">
-            <div className="relative">
-              <div
-                className={`
-                  relative w-80 h-[430px] rounded-3xl overflow-hidden group cursor-pointer bg-gradient-to-br from-gray-400 to-gray-400 transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:z-10
-                `}
-                style={{ animationDelay: `${index * 0.2}s`, animationDuration: "3s" }}
-              >
-                
+          <Link key={`${artist.id}-${index}`} href={`/artists/${artist.id}`} className="flex-shrink-0 group">
+            <div className="w-64 bg-card rounded-2xl border border-border overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-border hover:-translate-y-1">
+              {/* Image */}
+              <div className="relative h-80 overflow-hidden">
                 <img
-                    src={artist.image || "/placeholder.svg"}
-                    alt={artist.name}
-                    className="absolute inset-0 w-full h-full object-cover"
+                  src={artist.image || "/placeholder.svg"}
+                  alt={artist.name}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-                 {/* Overlay Blur */}
-                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-all"></div>
+                {/* Price Change Badge */}
+                <div className="absolute top-4 right-4">
+                  <div
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm ${
+                      artist.isPositive
+                        ? "bg-green-500/20 text-green-100 border border-green-400/30"
+                        : "bg-red-500/20 text-red-100 border border-red-400/30"
+                    }`}
+                  >
+                    {artist.isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                    <span>{artist.change}</span>
+                  </div>
+                </div>
+              </div>
 
-                {/* Nama */}
-                <div className="relative z-10 flex flex-col justify-end h-full p-6 text-white space-y-3">
-                  <h3 className="text-xl font-bold">{artist.name}</h3>
-                    <div className="flex items-center gap-1 text-white/90 text-sm font-semibold">
-                        <span>${artist.symbol}</span>
-                    </div>
-                    <div className="flex text-2xl font-bold items-center gap-1">
-                      <img src="images/coin.png" className="h-7" alt="coin" />
-                      <span>{artist.price} ETH</span>
-                    </div>
-                        <div
-                            className={`flex justify-center items-center text-sm gap-1 ${
-                                artist.isPositive ? "text-green-200" : "text-red-200"
-                            }`}
-                            >
-                            {artist.isPositive ? (
-                                <TrendingUp className="h-4 w-4" />
-                            ) : (
-                                <TrendingDown className="h-4 w-4" />
-                            )}
-                            <span>{artist.change}</span>
-                        </div>
-                    
+              {/* Content */}
+              <div className="p-6">
+                <div className="mb-4">
+                  <h3 className="text-xl font-medium text-card-foreground mb-1">{artist.name}</h3>
+                  <p className="text-sm text-muted-foreground font-mono">${artist.symbol}</p>
                 </div>
 
-                {/* Hover */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center">
+                      <div className="w-3 h-3 rounded-full bg-white" />
+                    </div>
+                    <span className="text-2xl font-light text-card-foreground">{artist.price}</span>
+                    <span className="text-sm text-muted-foreground font-light">ETH</span>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-border hover:bg-muted text-card-foreground font-medium bg-transparent"
+                  >
+                    View Details
+                  </Button>
                 </div>
               </div>
             </div>
