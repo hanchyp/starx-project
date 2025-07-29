@@ -12,10 +12,10 @@ contract CreateToken is Script {
         StarxTokenFactory factory = StarxTokenFactory(FACTORY_ADDRESS); // <--- ganti alamat factory yang sudah dideploy
 
         factory.createStarxToken(
-            "Taylor Swift Token",
-            "TYLR",
-            1_000_000 ether,
-            0.05 ether
+            "NEWJEANS Token",
+            "NJNS",
+            100000,
+            0.001 ether
         );
 
         vm.stopBroadcast();

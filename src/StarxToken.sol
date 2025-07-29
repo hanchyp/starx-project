@@ -68,6 +68,16 @@ contract StarxToken is ERC20Capped, Ownable {
         }
     }
 
+    function sellToken(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        require(balanceOf(msg.sender) >= amount, "Insufficient token balance");
+
+        uint256 ethToReturn = (amount * pricePerToken) / 10 ** decimals();
+        require(address(this).balance >= ethToReturn, "Not enough ETH in contract");
+
+        _transfer(msg.sender, owner(), amount); // Token kembali ke owner (opsional)
+        payable(msg.sender).transfer(ethToReturn);
+    }
 
     function claimHoldReward() external {
         require(!claimedHoldReward[msg.sender], "Already claimed");

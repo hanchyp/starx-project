@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { User, Music, Gift, LayoutDashboard, Home, LogOut, Menu, X } from "lucide-react"
-import { ConnectButton, useActiveAccount } from "thirdweb/react"
+import { ConnectButton, useActiveAccount, useActiveWallet, useDisconnect } from "thirdweb/react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,8 @@ export function Navbar() {
     { name: "Artists", href: "/artists", icon: Music },
     { name: "Benefits", href: "/benefits", icon: Gift },
   ]
+  const { disconnect } = useDisconnect();
+  const wallet = useActiveWallet();
 
   return (
     <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -84,8 +86,16 @@ export function Navbar() {
                       className="flex items-center text-popover-foreground hover:text-foreground"
                     >
                       <LayoutDashboard className="mr-3 h-4 w-4" />
-                      Artist Dashboard
+                      Dashboard
                     </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => disconnect(wallet)}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                  >
+                    <LogOut className="mr-3 h-4 w-4" />
+                    Disconnect Wallet
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer">
                     <ConnectButton client={client} chain={chain} />

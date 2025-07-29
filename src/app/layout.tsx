@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThirdwebProvider } from "thirdweb/react"
 import { Navbar } from "@/components/navbar"
+import { chain, client } from "./client"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThirdwebProvider>
+        <ThirdwebProvider client={client} activeChain={chain}>
           <div className="min-h-screen bg-background">
             <Navbar />
             <main className="container mx-auto px-6 py-8">{children}</main>

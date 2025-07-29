@@ -13,7 +13,7 @@ contract StarxTokenTest is Test {
     address user = address(0x1234);
 
     uint256 cap = 1_000_000;
-    uint256 pricePerToken = 1e15; // 0.001 ETH
+    uint256 pricePerToken = 1e15;
     uint256 minPurchase = 100;
     uint256 minHold = 200;
     uint256 holdDuration = 1 days;

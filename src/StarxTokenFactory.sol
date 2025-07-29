@@ -5,6 +5,7 @@ import "./StarxToken.sol";
 
 contract StarxTokenFactory {
     address[] public allTokens;
+    mapping(address => bool) public isArtist;
 
     event StarxTokenCreated(address indexed artist, address tokenAddress);
 
@@ -16,9 +17,9 @@ contract StarxTokenFactory {
     ) external {
         StarxToken token = new StarxToken(name, symbol, cap, tokenPriceInWei, msg.sender);
         allTokens.push(address(token));
+        isArtist[msg.sender] = true;
         emit StarxTokenCreated(msg.sender, address(token));
     }
-
 
     function getAllTokens() external view returns (address[] memory) {
         return allTokens;

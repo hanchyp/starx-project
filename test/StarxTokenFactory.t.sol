@@ -7,7 +7,7 @@ import "../src/StarxToken.sol";
 
 contract StarxTokenFactoryTest is Test {
     StarxTokenFactory public factory;
-    address public artist;
+    address public artist = address(0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266);
 
     function setUp() public {
         factory = new StarxTokenFactory();
@@ -40,5 +40,23 @@ contract StarxTokenFactoryTest is Test {
 
         address[] memory tokens = factory.getAllTokens();
         assertEq(tokens.length, 3, "Token count should be 3");
+    }
+
+    function testIsArtistInitiallyFalse() public view {
+        bool isRegistered = factory.isArtist(artist);
+        assertFalse(isRegistered, "Should not be artist yet");
+    }
+
+    function testIsArtistAfterRegister() public {
+        vm.prank(artist);
+        factory.createStarxToken(
+            "Starx", 
+            "STRX", 
+            100, 
+            1e15
+        );
+
+        bool isRegistered = factory.isArtist(artist);
+        assertTrue(isRegistered, "Should be artist after register");
     }
 }
