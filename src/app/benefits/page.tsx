@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useWallet } from "@/app/providers"
+import { useActiveAccount, ConnectButton } from "thirdweb/react"
+import { client, chain } from "../client"
 import {
   Gift,
   Clock,
@@ -109,7 +110,7 @@ const benefitHistory = [
 ]
 
 export default function BenefitsPage() {
-  const { isConnected } = useWallet()
+  const account = useActiveAccount()
   const [activeTab, setActiveTab] = useState("available")
 
   const handleClaimBenefit = async (benefitId: number) => {
@@ -145,18 +146,20 @@ export default function BenefitsPage() {
     }
   }
 
-  if (!isConnected) {
-    return (
-      <div className="text-center py-16">
-        <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl border border-gray-100 p-12 max-w-md mx-auto">
-          <Gift className="h-16 w-16 mx-auto text-gray-400 mb-6" />
-          <h2 className="text-2xl font-semibold mb-3">Connect Your Wallet</h2>
-          <p className="text-gray-600 mb-6">Connect your wallet to view and claim your exclusive benefits.</p>
-          <Button className="bg-gray-900 hover:bg-gray-800 text-white rounded-xl px-6">Connect Wallet</Button>
+  if (!account) {
+  return (
+    <div className="text-center py-16">
+      <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl border border-gray-100 p-12 max-w-md mx-auto">
+        <Gift className="h-16 w-16 mx-auto text-gray-400 mb-6" />
+        <h2 className="text-2xl font-semibold mb-3">Connect Your Wallet</h2>
+        <p className="text-gray-600 mb-6">Connect your wallet to view and claim your exclusive benefits.</p>
+        <div className="flex justify-center">
+          <ConnectButton client={client} chain={chain} />
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+}
 
   return (
     <div className="space-y-8">

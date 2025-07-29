@@ -8,15 +8,16 @@ contract ArtistMembershipToken is ERC20, Ownable {
     struct MembershipTier {
         string tierName;
         uint256 requiredTokens;
-        uint256 minHoldDuration; // in seconds
+        uint256 minHoldDuration;
         string[] benefits;
         bool isActive;
     }
 
     MembershipTier[] public membershipTiers;
     mapping(address => uint256) public lastReceived;
-    
+
     uint256 public tokenPrice;
+    uint256 public immutable maxSupply;
 
     event TokensPurchased(address buyer, uint256 amount, uint256 cost);
     event PriceUpdated(uint256 oldPrice, uint256 newPrice);
@@ -28,39 +29,41 @@ contract ArtistMembershipToken is ERC20, Ownable {
         uint256 _tokenPrice,
         address _owner
     ) ERC20(_name, _symbol) {
-        _mint(_owner, _initialSupply * 10 ** decimals());
+        uint256 supplyWithDecimals = _initialSupply * 10 ** decimals();
+        _mint(_owner, supplyWithDecimals);
         _transferOwnership(_owner);
         tokenPrice = _tokenPrice;
+        maxSupply = supplyWithDecimals;
     }
 
     // ============ Token Purchase =============
-    
+
     function buyTokens(uint256 amount) external payable {
         require(amount > 0, "Amount must be greater than 0");
-        
+
         uint256 cost = amount * tokenPrice;
         require(msg.value >= cost, "Insufficient payment");
-        
-        // Mint tokens to buyer
-        _mint(msg.sender, amount * 10 ** decimals());
-        
-        // Update lastReceived for membership tracking
+
+        uint256 tokenAmount = amount * 10 ** decimals();
+        require(balanceOf(owner()) >= tokenAmount, "Not enough tokens available");
+
+        _transfer(owner(), msg.sender, tokenAmount);
+
         lastReceived[msg.sender] = block.timestamp;
-        
-        // Return excess payment
+
         if (msg.value > cost) {
             payable(msg.sender).transfer(msg.value - cost);
         }
-        
+
         emit TokensPurchased(msg.sender, amount, cost);
     }
-    
+
     function setTokenPrice(uint256 _newPrice) external onlyOwner {
         uint256 oldPrice = tokenPrice;
         tokenPrice = _newPrice;
         emit PriceUpdated(oldPrice, _newPrice);
     }
-    
+
     function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
         require(balance > 0, "No funds to withdraw");
@@ -68,7 +71,7 @@ contract ArtistMembershipToken is ERC20, Ownable {
     }
 
     // ============ Fixed Transfer Logic =============
-    
+
     function transfer(address to, uint256 amount) public override returns (bool) {
         bool success = super.transfer(to, amount);
         if (success && to != address(0)) {
@@ -84,8 +87,7 @@ contract ArtistMembershipToken is ERC20, Ownable {
         }
         return success;
     }
-    
-    // Update lastReceived setiap kali ada token masuk
+
     function _updateLastReceived(address to) internal {
         if (balanceOf(to) > 0) {
             lastReceived[to] = block.timestamp;
@@ -131,9 +133,8 @@ contract ArtistMembershipToken is ERC20, Ownable {
 
     function getEligibleTiers(address user) public view returns (uint256[] memory) {
         require(lastReceived[user] > 0, "User never received tokens");
-        
-        uint256 count = 0;
 
+        uint256 count = 0;
         for (uint256 i = 0; i < membershipTiers.length; i++) {
             if (
                 membershipTiers[i].isActive &&
@@ -162,9 +163,9 @@ contract ArtistMembershipToken is ERC20, Ownable {
     function getTiers() public view returns (MembershipTier[] memory) {
         return membershipTiers;
     }
-    
+
     // ============ Helper Functions =============
-    
+
     function getUserMembershipStatus(address user) public view returns (
         uint256 balance,
         uint256 holdDuration,
@@ -172,9 +173,9 @@ contract ArtistMembershipToken is ERC20, Ownable {
     ) {
         balance = balanceOf(user);
         holdDuration = lastReceived[user] > 0 ? block.timestamp - lastReceived[user] : 0;
-        eligibleTiers = lastReceived[user] > 0 ? getEligibleTiers(user) : new uint256[](0);
+        eligibleTiers = lastReceived ;
     }
-    
+
     function getTokenCost(uint256 amount) public view returns (uint256) {
         return amount * tokenPrice;
     }

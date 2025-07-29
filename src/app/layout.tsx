@@ -2,7 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Providers } from "./providers"
+import { ThirdwebProvider } from "thirdweb/react"
 import { Navbar } from "@/components/navbar"
 
 const inter = Inter({
@@ -24,12 +24,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Providers>
+        <ThirdwebProvider>
           <div className="min-h-screen bg-background">
             <Navbar />
             <main className="container mx-auto px-6 py-8">{children}</main>
           </div>
-        </Providers>
+        </ThirdwebProvider>
       </body>
     </html>
   )
