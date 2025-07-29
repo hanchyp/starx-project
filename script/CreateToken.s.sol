@@ -6,15 +6,16 @@ import "../src/StarxTokenFactory.sol";
 
 contract CreateToken is Script {
     function run() external {
+        address FACTORY_ADDRESS  = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
         vm.startBroadcast();
 
-        StarxTokenFactory factory = StarxTokenFactory(0x5FbDB2315678afecb367f032d93F642f64180aa3); // <--- ganti alamat factory yang sudah dideploy
+        StarxTokenFactory factory = StarxTokenFactory(FACTORY_ADDRESS); // <--- ganti alamat factory yang sudah dideploy
 
         factory.createStarxToken(
-            "ArtistToken",
-            "ART",
+            "Taylor Swift Token",
+            "TYLR",
             1_000_000 ether,
-            0.01 ether
+            0.05 ether
         );
 
         vm.stopBroadcast();

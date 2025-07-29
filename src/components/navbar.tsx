@@ -72,9 +72,6 @@ export function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-popover border-border rounded-xl shadow-lg">
-                  <DropdownMenuItem className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer">
-                    <ConnectButton client={client} chain={chain} />
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center text-popover-foreground hover:text-foreground">
                       <User className="mr-3 h-4 w-4" />
@@ -89,6 +86,9 @@ export function Navbar() {
                       <LayoutDashboard className="mr-3 h-4 w-4" />
                       Artist Dashboard
                     </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer">
+                    <ConnectButton client={client} chain={chain} />
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </DropdownMenuContent>
