@@ -15,7 +15,8 @@ contract CreateToken is Script {
             "NEWJEANS Token",
             "NJNS",
             100000,
-            0.001 ether
+            0.001 ether,
+            "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/bafybeiapbutbxfirki6qqydm7n3ynznoy7xjl4y5imzpuu5qqgjqm6si6i"
         );
 
         vm.stopBroadcast();

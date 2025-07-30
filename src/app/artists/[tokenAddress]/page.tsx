@@ -14,6 +14,10 @@ import { BuyTokenSection } from "@/components/buy-token-section"
 import { SellTokenSection } from "@/components/sell-token-section"
 import { TransferTokenSection } from "@/components/transfer-token-section"
 import { ClaimHoldRewardSection } from "@/components/claim-hold-reward-section"
+import { useIsArtist } from "@/hooks/useIsArtist"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { FACTORY_ADDRESS } from "@/constants"
 
 export default function ArtistTokenPage() {
   const { tokenAddress } = useParams<{ tokenAddress: string }>()
@@ -23,15 +27,12 @@ export default function ArtistTokenPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const activeAccount = useActiveAccount()
+  const { isArtist, loading: isArtistLoading } = useIsArtist(FACTORY_ADDRESS)
 
   useEffect(() => {
-    if (!tokenAddress || typeof tokenAddress !== "string") {
-      console.warn("Invalid tokenAddress:", tokenAddress)
-      return
-    }
+    if (!tokenAddress || typeof tokenAddress !== "string") return
 
     const fetchTokenInfo = async () => {
-      console.log("Fetching token info for", tokenAddress)
       try {
         const contract = getContract({
           address: tokenAddress,
@@ -58,7 +59,6 @@ export default function ArtistTokenPage() {
           holdRewardURI,
         })
 
-        // Cek balance user
         if (activeAccount?.address) {
           const userBalance = await readContract({
             contract,
@@ -68,7 +68,6 @@ export default function ArtistTokenPage() {
           setBalance(userBalance)
         }
 
-        // Cek available token dari owner
         const owner = await readContract({ contract, method: "owner" })
         const ownerBalance = await readContract({
           contract,
@@ -88,6 +87,27 @@ export default function ArtistTokenPage() {
     fetchTokenInfo()
   }, [tokenAddress, activeAccount?.address])
 
+  const handleAddToken = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: tokenAddress,
+              symbol: data.symbol,
+              decimals: 18,
+              image: "/logo.png",
+            },
+          },
+        })
+      } catch (error) {
+        console.error("Gagal menambahkan token:", error)
+      }
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20 text-muted-foreground">
@@ -104,33 +124,6 @@ export default function ArtistTokenPage() {
     return <div className="text-muted-foreground text-center py-20">No data found for this token.</div>
   }
 
-  const handleAddToken = async () => {
-    if (window.ethereum) {
-      try {
-        const wasAdded = await window.ethereum.request({
-          method: 'wallet_watchAsset',
-          params: {
-            type: 'ERC20',
-            options: {
-              address: tokenAddress,
-              symbol: data.symbol,
-              decimals: 18,
-              image: "/logo.png",
-            },
-          },
-        });
-
-        if (wasAdded) {
-          console.log("Token ditambahkan ke wallet!");
-        } else {
-          console.log("User membatalkan penambahan token.");
-        }
-      } catch (error) {
-        console.error("Gagal menambahkan token:", error);
-      }
-    }
-  };
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <Card>
@@ -138,12 +131,22 @@ export default function ArtistTokenPage() {
           <CardTitle className="text-3xl">
             {data.name} (${data.symbol})
           </CardTitle>
-          <button
-            onClick={handleAddToken}
-            className="text-sm px-4 py-2 bg-black text-white rounded hover:bg-gray-900"
-          >
-            Add to Wallet
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddToken}
+              className="text-sm px-4 py-2 bg-black text-white rounded hover:bg-gray-900"
+            >
+              Add to Wallet
+            </button>
+            {isArtist && (
+              <Link href={`/artists/${tokenAddress}/setreward`}>
+                <Button variant="outline">Set Reward</Button>
+              </Link>
+            )}
+              <Link href={`/artists/${tokenAddress}/benefit`}>
+                <Button variant="outline">See Benefit</Button>
+              </Link>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
@@ -189,14 +192,10 @@ export default function ArtistTokenPage() {
 
           {/* <Separator />
 
-          <BuyTokenSection
-            tokenAddress={tokenAddress}
-            pricePerToken={data.pricePerToken}
-          />
+          <BuyTokenSection tokenAddress={tokenAddress} pricePerToken={data.pricePerToken} />
           <SellTokenSection tokenAddress={tokenAddress} />
           <TransferTokenSection tokenAddress={tokenAddress} />
           <ClaimHoldRewardSection tokenAddress={tokenAddress} /> */}
-
         </CardContent>
       </Card>
     </div>

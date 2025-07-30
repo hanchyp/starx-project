@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { readContract, getContract } from "thirdweb";
 import { localhost } from "thirdweb/chains";
-import { client } from "@/app/client";
+import { chain, client } from "@/app/client";
 import { factoryABI } from "@/abi/factory";
 import { tokenABI } from "@/abi/token";
 import { FACTORY_ADDRESS } from "@/constants";
@@ -12,6 +12,7 @@ export interface TokenInfo {
   name: string;
   symbol: string;
   price: string;
+  imageURI: string;
 }
 
 export function useTokens() {
@@ -24,15 +25,16 @@ export function useTokens() {
       try {
         const tokenContract = getContract({
           client,
-          chain: localhost,
+          chain,
           address,
           abi: tokenABI,
         });
 
-        const [name, symbol, priceRaw] = await Promise.all([
+        const [name, symbol, priceRaw, tokenImageURI] = await Promise.all([
           readContract({ contract: tokenContract, method: "name" }),
           readContract({ contract: tokenContract, method: "symbol" }),
           readContract({ contract: tokenContract, method: "pricePerToken" }),
+          readContract({ contract: tokenContract, method: "tokenImageURI" }),
         ]);
 
         return {
@@ -40,6 +42,7 @@ export function useTokens() {
           name: name as string,
           symbol: symbol as string,
           price: formatEther(priceRaw as bigint),
+          imageURI: tokenImageURI as string,
         };
       } catch {
         return null;

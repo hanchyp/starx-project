@@ -6,6 +6,7 @@ import { FACTORY_ADDRESS } from "@/constants"
 import { useIsArtist } from "@/hooks/useIsArtist"
 import { CreateTokenButton } from "@/components/create-token-button"
 import { Music, ShoppingBag, Calendar, Award, Crown } from "lucide-react"
+import SetRewardForm from "@/components/set-reward-form"
 
 
 export default function ArtistDashboardPage() {
@@ -13,7 +14,7 @@ export default function ArtistDashboardPage() {
   const { isArtist, loading } = useIsArtist(FACTORY_ADDRESS)
   console.log("Wallet:", account?.address)
   console.log("Is Artist?", isArtist)
-  
+
   if (loading) {
     return (
       <div className="text-center py-16 text-gray-500">Checking artist status...</div>
@@ -35,7 +36,7 @@ export default function ArtistDashboardPage() {
 
   return (
     <div className="text-center py-16">
-        ARTIS
-      </div>
+        Artist
+    </div>
   )
 }

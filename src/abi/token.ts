@@ -7,10 +7,127 @@ export const tokenABI = [
       { internalType: "uint256", name: "cap", type: "uint256" },
       { internalType: "uint256", name: "_pricePerToken", type: "uint256" },
       { internalType: "address", name: "_initialOwner", type: "address" },
+      { internalType: "string", name: "_tokenImageURI", type: "string" },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
   },
+
+  // minHoldDuration (uint256 public)
+{
+  "inputs": [],
+  "name": "minHoldDuration",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+
+{
+  "inputs": [],
+  "name": "tokenImageURI",
+  "outputs": [
+    {
+      "internalType": "string",
+      "name": "",
+      "type": "string"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+
+// purchaseRewardURI (string public)
+{
+  "inputs": [],
+  "name": "purchaseRewardURI",
+  "outputs": [
+    {
+      "internalType": "string",
+      "name": "",
+      "type": "string"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+
+// holdRewardURI (string public)
+{
+  "inputs": [],
+  "name": "holdRewardURI",
+  "outputs": [
+    {
+      "internalType": "string",
+      "name": "",
+      "type": "string"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+    "inputs": [],
+    "name": "minPurchaseForReward",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minHoldAmount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minHoldDuration",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "purchaseRewardURI",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "holdRewardURI",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "claimedPurchaseReward",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "claimedHoldReward",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "holdingStart",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+
 
   // CUSTOM FUNCTIONS
   {
@@ -34,12 +151,43 @@ export const tokenABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "claimHoldReward",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "user",
+      "type": "address"
+    }
+  ],
+  "name": "claimedPurchaseReward",
+  "outputs": [
+    {
+      "internalType": "bool",
+      "name": "",
+      "type": "bool"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+  {
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "user",
+      "type": "address"
+    }
+  ],
+  "name": "claimedHoldReward",
+  "outputs": [
+    {
+      "internalType": "bool",
+      "name": "",
+      "type": "bool"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
   {
     inputs: [],
     name: "withdraw",

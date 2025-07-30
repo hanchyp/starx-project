@@ -89,10 +89,11 @@ export function ArtistCoinCarousel() {
               {/* Image */}
               <div className="relative h-80 overflow-hidden">
                 <img
-                  src="/placeholder.svg?height=400&width=320"
+                  src={token.imageURI}
                   alt={token.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
+
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               </div>
 

@@ -13,7 +13,7 @@ contract StarxTokenTest is Test {
     address user = address(0x1234);
 
     uint256 cap = 1_000_000;
-    uint256 pricePerToken = 1e15;
+    uint256 pricePerToken = 1e15; // 0.001 ETH
     uint256 minPurchase = 100;
     uint256 minHold = 200;
     uint256 holdDuration = 1 days;
@@ -29,7 +29,8 @@ contract StarxTokenTest is Test {
             "Starx", 
             "STRX", 
             cap, 
-            pricePerToken
+            pricePerToken,
+            "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/bafybeiapbutbxfirki6qqydm7n3ynznoy7xjl4y5imzpuu5qqgjqm6si6i"
         );
 
         address created = factory.getAllTokens()[0];
@@ -45,20 +46,62 @@ contract StarxTokenTest is Test {
         vm.stopPrank();
     }
 
-    function testOwnerIsSetCorrectly() public view{
+    function testSetRewardConditions() public {
+        vm.prank(owner);
+
+        uint256 newMinPurchase = 200;
+        uint256 newMinHold = 300;
+        uint256 newMinDuration = 7 days;
+        string memory newPurchaseURI = "ipfs://purchase-reward";
+        string memory newHoldURI = "ipfs://hold-reward";
+
+        token.setRewardConditions(
+            newMinPurchase,
+            newMinHold,
+            newMinDuration,
+            newPurchaseURI,
+            newHoldURI
+        );
+
+        uint256 decimals = token.decimals();
+
+        assertEq(token.minPurchaseForReward(), newMinPurchase * 10 ** decimals);
+        assertEq(token.minHoldAmount(), newMinHold * 10 ** decimals);
+        assertEq(token.minHoldDuration(), newMinDuration);
+        assertEq(token.purchaseRewardURI(), newPurchaseURI);
+        assertEq(token.holdRewardURI(), newHoldURI);
+    }
+
+
+    function testOnlyOwnerCanSetRewardConditions() public {
+        vm.prank(user);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
+
+        token.setRewardConditions(
+            100,
+            100,
+            1 days,
+            "ipfs://fail1",
+            "ipfs://fail2"
+        );
+    }
+
+    function testOwnerIsSetCorrectly() public view {
         assertEq(token.owner(), owner);
     }
 
     function testBuyTokenAndReceivePurchaseReward() public {
+        uint256 valueToSend = minPurchase * pricePerToken;
         vm.deal(user, 1 ether);
         vm.prank(user);
 
         vm.expectEmit(true, false, false, true);
         emit StarxToken.PurchaseRewardGranted(user, purchaseURI);
 
-        token.buyToken{value: minPurchase * pricePerToken}();
+        token.buyToken{value: valueToSend}();
 
-        assertEq(token.balanceOf(user), minPurchase * 10 ** token.decimals());
+        uint256 expectedBalance = minPurchase * (10 ** token.decimals());
+        assertEq(token.balanceOf(user), expectedBalance);
         assertTrue(token.claimedPurchaseReward(user));
     }
 
@@ -79,7 +122,6 @@ contract StarxTokenTest is Test {
         vm.prank(user);
         token.buyToken{value: amount}();
 
-        // Fast forward time
         vm.warp(block.timestamp + holdDuration + 1);
 
         vm.prank(user);
@@ -122,19 +164,18 @@ contract StarxTokenTest is Test {
         token.withdraw();
     }
 
-
     function testCannotClaimPurchaseRewardTwice() public {
-        vm.deal(user, 1 ether);
+        uint256 valueToSend = minPurchase * pricePerToken;
+
+        vm.deal(user, 2 ether);
         vm.prank(user);
-        token.buyToken{value: minPurchase * pricePerToken}();
+        token.buyToken{value: valueToSend}();
 
         assertTrue(token.claimedPurchaseReward(user));
 
         vm.prank(user);
-        token.buyToken{value: minPurchase * pricePerToken}(); // seharusnya tidak emit event lagi
-        // Tidak perlu expectRevert karena hanya tidak emit, tidak revert
-        assertTrue(token.claimedPurchaseReward(user));
+        token.buyToken{value: valueToSend}(); // Tidak emit ulang
+
+        assertTrue(token.claimedPurchaseReward(user)); // Masih true, tidak berubah
     }
-
-
 }

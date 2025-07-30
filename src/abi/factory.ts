@@ -82,6 +82,26 @@ export const factoryABI = [
   ],
   "stateMutability": "view",
   "type": "function"
+},
+{
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "owner",
+      "type": "address"
+    }
+  ],
+  "name": "getTokensByOwner",
+  "outputs": [
+    {
+      "internalType": "address[]",
+      "name": "",
+      "type": "address[]"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
 }
+
 
 ]

@@ -6,6 +6,7 @@ import "./StarxToken.sol";
 contract StarxTokenFactory {
     address[] public allTokens;
     mapping(address => bool) public isArtist;
+    mapping(address => address[]) private tokensByOwner;
 
     event StarxTokenCreated(address indexed artist, address tokenAddress);
 
@@ -13,15 +14,30 @@ contract StarxTokenFactory {
         string memory name,
         string memory symbol,
         uint256 cap,
-        uint256 tokenPriceInWei
+        uint256 tokenPriceInWei,
+        string memory tokenImageURI
     ) external {
-        StarxToken token = new StarxToken(name, symbol, cap, tokenPriceInWei, msg.sender);
+        StarxToken token = new StarxToken(
+            name,
+            symbol,
+            cap,
+            tokenPriceInWei,
+            msg.sender,
+            tokenImageURI
+        );
+
         allTokens.push(address(token));
         isArtist[msg.sender] = true;
+        tokensByOwner[msg.sender].push(address(token)); // ✅ tambahkan ini
+
         emit StarxTokenCreated(msg.sender, address(token));
     }
 
     function getAllTokens() external view returns (address[] memory) {
         return allTokens;
+    }
+
+    function getTokensByOwner(address owner) external view returns (address[] memory) {
+        return tokensByOwner[owner];
     }
 }
