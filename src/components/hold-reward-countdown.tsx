@@ -103,7 +103,7 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
         params: [],
       })
       await sendTransaction(call)
-      alert("Reward claimed successfully!")
+      alert("Reward claimed successfully!!!")
     } catch (err) {
       console.error("Claim failed:", err)
       alert("Gagal klaim reward.")
