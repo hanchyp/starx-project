@@ -89,10 +89,19 @@ export default function ArtistPage() {
         setClaimedHold(Boolean(claimedHold))
 
         // Fetch metadata from IPFS
-        const purchaseMeta = await fetch(`${GATEWAY}${(purchaseURI as string).replace("ipfs://", "")}`).then(res => res.json())
-        const holdMeta = await fetch(`${GATEWAY}${(holdURI as string).replace("ipfs://", "")}`).then(res => res.json())
-        setPurchaseReward(purchaseMeta)
-        setHoldReward(holdMeta)
+        if ((purchaseURI as string) === "") {
+          setPurchaseReward({ name: "Not set", description: "Artist didn't set the purchase reward yet.", image: "" })
+        } else {
+          const purchaseMeta = await fetch(`${GATEWAY}${(purchaseURI as string).replace("ipfs://", "")}`).then(res => res.json())
+          setPurchaseReward(purchaseMeta)
+        }
+
+        if ((holdURI as string) === "") {
+          setHoldReward({ name: "Not set", description: "Artist didn't set the hold reward yet.", image: "" })
+        } else {
+          const holdMeta = await fetch(`${GATEWAY}${(holdURI as string).replace("ipfs://", "")}`).then(res => res.json())
+          setHoldReward(holdMeta)
+        }
       } catch (err) {
         console.error("Error fetching token data", err)
       } finally {
@@ -137,11 +146,14 @@ export default function ArtistPage() {
               <p className="text-sm text-gray-500">{purchaseReward.description}</p>
             </div>
 
-            <img
-              src={`${GATEWAY}${purchaseReward.image.replace("ipfs://", "")}`}
-              alt="Purchase Reward"
-              className="rounded-lg w-32 md:w-40 object-cover"
-            />
+            {purchaseReward.image && (
+              <img
+                src={`${GATEWAY}${purchaseReward.image.replace("ipfs://", "")}`}
+                alt="Purchase Reward"
+                className="rounded-lg w-32 md:w-40 object-cover"
+              />
+            )}
+
           </CardContent>
 
         </Card>
@@ -160,11 +172,13 @@ export default function ArtistPage() {
               <p className="font-semibold">{holdReward.name}</p>
               <p className="text-sm text-gray-500">{holdReward.description}</p>
               <p className="text-sm">Requires holding for {minHoldDuration} days</p>
-              <img
-                src={`${GATEWAY}${holdReward.image.replace("ipfs://", "")}`}
-                alt="Hold Reward"
-                className="rounded-lg w-64 mt-4"
-              />
+              {holdReward.image && (
+                <img
+                  src={`${GATEWAY}${holdReward.image.replace("ipfs://", "")}`}
+                  alt="Hold Reward"
+                  className="rounded-lg w-64 mt-4"
+                />
+              )}
             </CardContent>
           </Card>
         )}

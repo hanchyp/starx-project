@@ -22,7 +22,6 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
   const [eligible, setEligible] = useState(false)
   const [loading, setLoading] = useState(true)
   const [claiming, setClaiming] = useState(false)
-  const [holdReward, setHoldReward] = useState<string>("")
 
   const contract = getContract({
     address: tokenAddress,
@@ -34,7 +33,7 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
   useEffect(() => {
     async function fetchHoldData() {
       try {
-        const [start, duration, minHoldAmountRaw, balanceRaw, holdRewardURI] = await Promise.all([
+        const [start, duration, minHoldAmountRaw, balanceRaw] = await Promise.all([
           readContract({
             contract,
             method: "holdingStart",
@@ -53,15 +52,11 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
             method: "balanceOf",
             params: [userAddress],
           }),
-          readContract({
-            contract,
-            method: "holdRewardURI",
-          }),
+          
         ])
 
         const minHoldAmount = BigInt(minHoldAmountRaw)
         const balance = BigInt(balanceRaw)
-        setHoldReward(holdRewardURI as string)
 
         if (balance < minHoldAmount) {
           setEligible(false)
@@ -121,7 +116,7 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
 
   if (loading) return <p>Loading hold reward countdown...</p>
 
-  if (!eligible || holdReward === "")
+  if (!eligible)
     return (
         <div></div>
     )
