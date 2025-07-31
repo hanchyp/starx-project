@@ -30,11 +30,12 @@ export function useUserTokens(userAddress: string) {
           chain,
         })
 
-        const allTokenAddresses: string[] = await readContract({
+        const allTokenAddresses: string[] = [...await readContract({
           contract: factory,
           method: "getAllTokens",
           params: [],
-        })
+        })]
+
 
         const results: TokenInfo[] = []
 

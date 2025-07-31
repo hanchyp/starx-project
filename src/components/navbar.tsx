@@ -87,7 +87,11 @@ export function Navbar() {
                   </DropdownMenuItem>
 
                   <DropdownMenuItem
-                    onClick={() => disconnect(wallet)}
+                    onClick={() => {
+                      if (wallet) {
+                        disconnect(wallet)
+                      }
+                    }}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                   >
                     <LogOut className="mr-3 h-4 w-4" />

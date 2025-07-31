@@ -80,11 +80,12 @@ export function useTokens() {
         } catch {
           const fallback = await readContract({
             contract: {
+              client,
               address: FACTORY_ADDRESS,
               abi: factoryABI,
               chain,
             },
-            method: "function getAllTokens() view returns (address[])",
+            method: "getAllTokens",
           });
 
           if (Array.isArray(fallback)) {

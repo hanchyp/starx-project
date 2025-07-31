@@ -20,7 +20,7 @@ export default function ArtistPage() {
   const [name, setName] = useState("")
   const [symbol, setSymbol] = useState("")
   const [price, setPrice] = useState("")
-  const [balance, setBalance] = useState<bigint>(0)
+  const [balance, setBalance] = useState<bigint>(0n)
 
   const [minPurchase, setMinPurchase] = useState("")
   const [minHold, setMinHold] = useState("")
@@ -49,6 +49,8 @@ export default function ArtistPage() {
           chain
         })
 
+        if (!account) return
+        
         const [
           name,
           symbol,

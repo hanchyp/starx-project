@@ -103,5 +103,4 @@ export const factoryABI = [
   "type": "function"
 }
 
-
-]
+] as const

@@ -1,24 +1,28 @@
-import { useQuery } from "@tanstack/react-query"
-import { readContract } from "thirdweb"
-import { factoryABI } from "@/abi/factory"
-import { FACTORY_ADDRESS } from "@/constants"
-import { client, chain } from "@/app/client"
+import { useQuery } from "@tanstack/react-query";
+import { getContract, readContract } from "thirdweb";
+import { factoryABI } from "@/abi/factory";
+import { FACTORY_ADDRESS } from "@/constants";
+import { client, chain } from "@/app/client";
 
 export function useMyTokens(userAddress?: string) {
   return useQuery({
     queryKey: ["my-tokens", userAddress],
     enabled: !!userAddress,
     queryFn: async () => {
-      const tokens = await readContract({
-        client,
-        chain,
+      const contract = getContract({
         address: FACTORY_ADDRESS,
         abi: factoryABI,
-        functionName: "getTokensByOwner",
-        args: [userAddress],
-      })
+        chain,
+        client,
+      });
 
-      return tokens as string[]
+      const tokens = await readContract({
+        contract,
+        method: "getTokensByOwner",
+        params: [userAddress!],
+      });
+
+      return tokens as string[];
     },
-  })
+  });
 }

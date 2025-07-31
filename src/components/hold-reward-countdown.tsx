@@ -8,9 +8,9 @@ import {
   prepareContractCall,
   sendTransaction,
 } from "thirdweb"
+import { useActiveAccount } from "thirdweb/react"
 import { tokenABI } from "@/abi/token"
 import { client, chain } from "@/app/client"
-import { formatEther } from "viem"
 
 type Props = {
   tokenAddress: string
@@ -18,6 +18,7 @@ type Props = {
 }
 
 export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
+  const walletClient = useActiveAccount()
   const [timeLeft, setTimeLeft] = useState<number | null>(null)
   const [eligible, setEligible] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -52,7 +53,6 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
             method: "balanceOf",
             params: [userAddress],
           }),
-          
         ])
 
         const minHoldAmount = BigInt(minHoldAmountRaw)
@@ -77,7 +77,6 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
 
         update()
         const interval = setInterval(update, 1000)
-
         return () => clearInterval(interval)
       } catch (err) {
         console.error("Error loading hold data:", err)
@@ -90,14 +89,25 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
   }, [userAddress, tokenAddress])
 
   async function handleClaim() {
+    if (!walletClient?.address) {
+      alert("Wallet not connected")
+      return
+    }
+
     try {
       setClaiming(true)
+
       const call = prepareContractCall({
         contract,
-        method: "claimHoldReward",
-        params: [],
+        method: "claimedHoldReward",
+        params: [userAddress],
       })
-      await sendTransaction(call)
+
+      await sendTransaction({
+          account: walletClient,
+          transaction: call
+      })
+
       alert("Reward claimed successfully!")
     } catch (err) {
       console.error("Claim failed:", err)
@@ -116,10 +126,7 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
 
   if (loading) return <p>Loading hold reward countdown...</p>
 
-  if (!eligible)
-    return (
-        <div></div>
-    )
+  if (!eligible) return <div></div>
 
   return (
     <div className="mt-4">
@@ -129,7 +136,7 @@ export function HoldRewardCountdown({ tokenAddress, userAddress }: Props) {
         </Button>
       ) : (
         <p className="text-sm text-gray-600">
-          Reward will available: {formatTime(timeLeft)}
+          {timeLeft !== null && <>Reward will be available: {formatTime(timeLeft)}</>}
         </p>
       )}
     </div>

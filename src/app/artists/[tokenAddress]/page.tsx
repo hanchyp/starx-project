@@ -21,6 +21,12 @@ import { FACTORY_ADDRESS } from "@/constants"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { HoldRewardCountdown } from "@/components/hold-reward-countdown"
 
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
 export default function ArtistTokenPage() {
   const { tokenAddress } = useParams<{ tokenAddress: string }>()
   const [data, setData] = useState<any>(null)
@@ -441,7 +447,13 @@ export default function ArtistTokenPage() {
                         {formatEther(data.minHoldAmount)} {data.symbol} for {minHoldDurationDay} days
                       </span>
                     </div>
-                    <HoldRewardCountdown tokenAddress={tokenAddress} userAddress={activeAccount?.address} />
+                    {activeAccount?.address && (
+                      <HoldRewardCountdown
+                        tokenAddress={tokenAddress}
+                        userAddress={activeAccount.address}
+                      />
+                    )}
+
                   </div>
                 </div>
               </CardContent>
