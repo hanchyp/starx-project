@@ -1,4 +1,4 @@
-# 🌟 Starx Token Platform
+# 🌟 STARX Tokenize Platform
 
 A decentralized platform to empower music artists and their fans through token-based memberships and rewards. Built using modern Web3 and Web2 technologies.
 
