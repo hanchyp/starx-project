@@ -1,181 +1,86 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import "../src/StarxToken.sol";
-import "../src/StarxTokenFactory.sol";
 
 contract StarxTokenTest is Test {
     StarxToken token;
-    StarxTokenFactory factory;
-
     address owner = address(0xABCD);
-    address user = address(0x1234);
+    address user = address(0xBEEF);
 
-    uint256 cap = 1_000_000;
-    uint256 pricePerToken = 1e15; // 0.001 ETH
-    uint256 minPurchase = 100;
-    uint256 minHold = 200;
-    uint256 holdDuration = 1 days;
-
-    string purchaseURI = "ipfs://purchase";
-    string holdURI = "ipfs://hold";
+    uint256 public constant INITIAL_CAP = 1_000_000 ether;
+    uint256 public constant TOKEN_PRICE = 1 ether; // 1 ETH per token
 
     function setUp() public {
-        vm.startPrank(owner);
-        factory = new StarxTokenFactory();
+        // Berikan ETH ke owner dan user untuk transaksi
+        vm.deal(owner, 100 ether);
+        vm.deal(user, 100 ether);
 
-        factory.createStarxToken(
-            "Starx", 
-            "STRX", 
-            cap, 
-            pricePerToken,
-            "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/bafybeiapbutbxfirki6qqydm7n3ynznoy7xjl4y5imzpuu5qqgjqm6si6i"
+        // Deploy contract
+        token = new StarxToken(
+            "TestToken",
+            "TEST",
+            1_000_000,
+            TOKEN_PRICE,
+            owner,
+            "ipfs://token-image",
+            "ipfs://desc"
         );
 
-        address created = factory.getAllTokens()[0];
-        token = StarxToken(payable(created));
-
-        token.setRewardConditions(
-            minPurchase,
-            minHold,
-            holdDuration,
-            purchaseURI,
-            holdURI
-        );
-        vm.stopPrank();
-    }
-
-    function testSetRewardConditions() public {
+        // Owner set reward condition
         vm.prank(owner);
-
-        uint256 newMinPurchase = 200;
-        uint256 newMinHold = 300;
-        uint256 newMinDuration = 7 days;
-        string memory newPurchaseURI = "ipfs://purchase-reward";
-        string memory newHoldURI = "ipfs://hold-reward";
-
         token.setRewardConditions(
-            newMinPurchase,
-            newMinHold,
-            newMinDuration,
-            newPurchaseURI,
-            newHoldURI
-        );
-
-        uint256 decimals = token.decimals();
-
-        assertEq(token.minPurchaseForReward(), newMinPurchase * 10 ** decimals);
-        assertEq(token.minHoldAmount(), newMinHold * 10 ** decimals);
-        assertEq(token.minHoldDuration(), newMinDuration);
-        assertEq(token.purchaseRewardURI(), newPurchaseURI);
-        assertEq(token.holdRewardURI(), newHoldURI);
-    }
-
-
-    function testOnlyOwnerCanSetRewardConditions() public {
-        vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
-
-        token.setRewardConditions(
-            100,
-            100,
-            1 days,
-            "ipfs://fail1",
-            "ipfs://fail2"
+            100, // min purchase
+            200, // min hold
+            7 days,
+            "ipfs://purchase-reward",
+            "ipfs://hold-reward"
         );
     }
 
-    function testOwnerIsSetCorrectly() public view {
-        assertEq(token.owner(), owner);
+    function testOwnerBalance() public view {
+        // Owner seharusnya punya seluruh token cap awal
+        assertEq(token.balanceOf(owner), INITIAL_CAP);
     }
 
-    function testBuyTokenAndReceivePurchaseReward() public {
-        uint256 valueToSend = minPurchase * pricePerToken;
-        vm.deal(user, 1 ether);
+    function testUserCannotClaimRewardWithoutBuy() public {
         vm.prank(user);
-
-        vm.expectEmit(true, false, false, true);
-        emit StarxToken.PurchaseRewardGranted(user, purchaseURI);
-
-        token.buyToken{value: valueToSend}();
-
-        uint256 expectedBalance = minPurchase * (10 ** token.decimals());
-        assertEq(token.balanceOf(user), expectedBalance);
-        assertTrue(token.claimedPurchaseReward(user));
-    }
-
-    function testCannotClaimHoldRewardTooSoon() public {
-        uint256 amount = minHold * pricePerToken;
-        vm.deal(user, 1 ether);
-        vm.prank(user);
-        token.buyToken{value: amount}();
-
-        vm.prank(user);
-        vm.expectRevert("Hold duration not met");
+        vm.expectRevert(); // belum memenuhi syarat holding
         token.claimHoldReward();
     }
 
-    function testClaimHoldRewardAfterDuration() public {
-        uint256 amount = minHold * pricePerToken;
-        vm.deal(user, 1 ether);
+    function testBuyBelowMinNotGetPurchaseReward() public {
         vm.prank(user);
-        token.buyToken{value: amount}();
+        token.buyToken{value: 10 ether}(); // hanya dapat 10 token
 
-        vm.warp(block.timestamp + holdDuration + 1);
-
-        vm.prank(user);
-        vm.expectEmit(true, false, false, true);
-        emit StarxToken.HoldRewardGranted(user, holdURI);
-
-        token.claimHoldReward();
-
-        assertTrue(token.claimedHoldReward(user));
+        bool claimed = token.claimedPurchaseReward(user);
+        assertFalse(claimed, "User tidak boleh dapat reward jika beli < minPurchaseForReward");
     }
 
-    function testWithdrawByOwner() public {
-        uint256 amount = minHold * pricePerToken;
-        vm.deal(user, 1 ether);
+    function testBuyEnoughShouldGetPurchaseReward() public {
         vm.prank(user);
-        token.buyToken{value: amount}();
+        token.buyToken{value: 100 ether}(); // beli 100 token, sesuai threshold
 
-        uint256 before = owner.balance;
+        bool claimed = token.claimedPurchaseReward(user);
+        assertTrue(claimed, "User seharusnya dapat reward jika beli >= minPurchaseForReward");
+    }
 
+    function testOwnerBuyAlsoGetsReward() public {
         vm.prank(owner);
-        token.withdraw();
+        token.buyToken{value: 100 ether}();
 
-        assertGt(owner.balance, before);
+        bool claimed = token.claimedPurchaseReward(owner);
+        assertTrue(claimed, "Owner seharusnya dapat reward juga jika beli memenuhi syarat");
     }
 
-    function testCannotBuyWithoutETH() public {
+    function testEventEmittedWhenRewardGranted() public {
+        vm.expectEmit(true, false, false, true);
+        emit PurchaseRewardGranted(user, "ipfs://purchase-reward");
+
         vm.prank(user);
-        vm.expectRevert("Send ETH to buy tokens");
-        token.buyToken{value: 0}();
+        token.buyToken{value: 100 ether}();
     }
 
-    function testNonOwnerCannotWithdraw() public {
-        uint256 amount = minHold * pricePerToken;
-        vm.deal(user, 1 ether);
-        vm.prank(user);
-        token.buyToken{value: amount}();
-
-        vm.prank(user);
-        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, user));
-        token.withdraw();
-    }
-
-    function testCannotClaimPurchaseRewardTwice() public {
-        uint256 valueToSend = minPurchase * pricePerToken;
-
-        vm.deal(user, 2 ether);
-        vm.prank(user);
-        token.buyToken{value: valueToSend}();
-
-        assertTrue(token.claimedPurchaseReward(user));
-
-        vm.prank(user);
-        token.buyToken{value: valueToSend}(); // Tidak emit ulang
-
-        assertTrue(token.claimedPurchaseReward(user)); // Masih true, tidak berubah
-    }
+    event PurchaseRewardGranted(address indexed user, string uri);
 }

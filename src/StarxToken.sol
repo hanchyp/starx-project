@@ -10,9 +10,10 @@ contract StarxToken is ERC20Capped, Ownable {
     uint256 public minHoldAmount;
     uint256 public minHoldDuration;
 
-    string public purchaseRewardURI;
-    string public holdRewardURI;
+    string public purchaseRewardURI = "";
+    string public holdRewardURI = "";
     string public tokenImageURI;
+    string public descriptionURI;
 
     mapping(address => uint256) public holdingStart;
     mapping(address => bool) public claimedHoldReward;
@@ -27,7 +28,8 @@ contract StarxToken is ERC20Capped, Ownable {
         uint256 cap,
         uint256 _pricePerToken,
         address _initialOwner,
-        string memory _tokenImageURI
+        string memory _tokenImageURI,
+        string memory _descriptionURI
     ) ERC20(name, symbol)
     ERC20Capped(cap * 10 ** decimals())
     Ownable(_initialOwner)
@@ -35,6 +37,7 @@ contract StarxToken is ERC20Capped, Ownable {
         _mint(_initialOwner, cap * 10 ** decimals());
         pricePerToken = _pricePerToken;
         tokenImageURI = _tokenImageURI;
+        descriptionURI = _descriptionURI;
     }
 
     function setRewardConditions(

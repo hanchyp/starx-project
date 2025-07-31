@@ -106,20 +106,20 @@ export function BuyTokenSection({ tokenAddress, pricePerToken }: Props) {
   }
 
   return (
-    <div className="p-6 border border-green-500 rounded-xl bg-background space-y-4">
-      <h2 className="text-xl font-semibold text-green-500 flex items-center gap-2">
+    <div className="p-6 border border-gray-300 rounded-xl bg-background space-y-4">
+      <h2 className="text-xl font-semibold text-black flex items-center gap-2">
         <ShoppingCart className="w-5 h-5" />
         Buy Token ({formatEther(pricePerToken)} ETH/token)
       </h2>
 
       {account.address.toLowerCase() === ownerAddress.toLowerCase() && (
-        <div className="bg-red-100 text-red-700 p-3 rounded border border-red-400">
-          Sebagai owner, kamu tidak bisa membeli token sendiri.
+        <div className="bg-white text-red-800 p-3 rounded border border-red-200">
+          As owner, you can't buy your own token.
         </div>
       )}
 
       {Number(ownerBalance) <= 0 && (
-        <div className="bg-red-100 text-red-700 p-3 rounded border border-red-400">
+        <div className="bg-white text-red-800 p-3 rounded border border-red-200">
           Token habis! Owner harus tambah stok.
         </div>
       )}
@@ -133,13 +133,13 @@ export function BuyTokenSection({ tokenAddress, pricePerToken }: Props) {
           placeholder="10"
           value={tokenAmount}
           onChange={(e) => setTokenAmount(e.target.value)}
-          className="w-full p-2 bg-muted text-foreground rounded border border-green-400"
+          className="w-full p-2 bg-muted text-foreground rounded border border-gray-400"
         />
       </div>
 
       {requiredEth !== "0" && (
         <div className="text-green-600">
-          Estimasi Biaya: {Number(requiredEth)} ETH
+          Cost Estimate: {Number(requiredEth)} ETH
         </div>
       )}
 
@@ -151,11 +151,11 @@ export function BuyTokenSection({ tokenAddress, pricePerToken }: Props) {
           parseFloat(tokenAmount) > parseFloat(ownerBalance) ||
           account.address.toLowerCase() === ownerAddress.toLowerCase()
         }
-        className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
+        className="w-full bg-black hover:bg-gray-700 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
       >
         {parseFloat(tokenAmount) > parseFloat(ownerBalance)
-          ? "Stok tidak cukup"
-          : "Beli Token"}
+          ? "SOLD OUT"
+          : "Buy Token"}
       </button>
     </div>
   )

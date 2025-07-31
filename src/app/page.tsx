@@ -21,7 +21,10 @@ export default function HomePage() {
         </div>
 
         <div className="space-y-6 max-w-4xl mx-auto">
-          <h1 className="text-6xl md:text-7xl font-extralight text-foreground tracking-tight">STARX</h1>
+          <h1 className="text-6xl md:text-7xl font-extralight text-foreground tracking-tight">
+            STAR<span className="text-yellow-400 font-extralight">X</span>
+          </h1>
+
           <p className="text-xl md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto leading-relaxed">
             Invest in artist tokens and unlock exclusive experiences with your favorite musicians
           </p>

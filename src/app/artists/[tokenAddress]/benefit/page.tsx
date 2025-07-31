@@ -118,7 +118,7 @@ export default function ArtistPage() {
           <CardTitle>{name}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <p>Symbol: {symbol}</p>
+          <p>$ {symbol}</p>
           <p>Price per Token: {price} ETH</p>
           <p>Your Balance: {formatEther(balance)} {symbol}</p>
         </CardContent>
@@ -126,20 +126,24 @@ export default function ArtistPage() {
 
       <Separator />
 
-      {!claimedPurchase && purchaseReward && balance >= BigInt(parseEther(minPurchase)) && (
+      {balance >= BigInt(parseEther(minPurchase)) && (
         <Card>
           <CardHeader>
             <CardTitle>Purchase Reward</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="font-semibold">{purchaseReward.name}</p>
-            <p className="text-sm text-gray-500">{purchaseReward.description}</p>
+          <CardContent className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              <p className="font-semibold">{purchaseReward.name}</p>
+              <p className="text-sm text-gray-500">{purchaseReward.description}</p>
+            </div>
+
             <img
               src={`${GATEWAY}${purchaseReward.image.replace("ipfs://", "")}`}
               alt="Purchase Reward"
-              className="rounded-lg w-64 mt-4"
+              className="rounded-lg w-32 md:w-40 object-cover"
             />
           </CardContent>
+
         </Card>
       )}
 

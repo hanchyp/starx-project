@@ -6,6 +6,7 @@ import { getContract, readContract, sendTransaction, prepareContractCall } from 
 import { parseEther, formatEther } from "viem"
 import { client, chain } from "@/app/client"
 import { tokenABI } from "@/abi/token"
+import { CircleDollarSign } from "lucide-react"
 
 interface Props {
   tokenAddress: string
@@ -16,18 +17,21 @@ export function SellTokenSection({ tokenAddress }: Props) {
   const [amount, setAmount] = useState("")
   const [tokenBalance, setTokenBalance] = useState("0")
   const [ownerAddress, setOwnerAddress] = useState("")
+  const [symbol, setSymbol] = useState("")
 
   const contract = getContract({ client, address: tokenAddress, chain, abi: tokenABI })
 
   useEffect(() => {
     const fetchData = async () => {
       if (!account) return
-      const [owner, balance] = await Promise.all([
+      const [owner, balance, symbol] = await Promise.all([
         readContract({ contract, method: "owner" }),
         readContract({ contract, method: "balanceOf", params: [account.address] }),
+        readContract({ contract, method: "symbol" }),
       ])
       setOwnerAddress(owner)
       setTokenBalance(formatEther(balance))
+      setSymbol(symbol)
     }
     fetchData()
   }, [account, contract])
@@ -57,16 +61,19 @@ export function SellTokenSection({ tokenAddress }: Props) {
 
   if (account.address.toLowerCase() === ownerAddress.toLowerCase()) {
     return (
-      <div className="mt-10 p-6 border border-yellow-400 bg-yellow-50 rounded-xl text-yellow-700">
-        Sebagai owner, kamu tidak bisa menjual token ke kontrak sendiri.
+      <div className="p-6 border border-yellow-400 bg-yellow-50 rounded-xl text-yellow-700">
+        As owner, you can't sell your own token.
       </div>
     )
   }
 
   return (
-    <div className="mt-10 p-6 border border-yellow-400 bg-yellow-50 rounded-xl space-y-4">
-      <h2 className="text-xl font-semibold text-yellow-600">Sell Token</h2>
-      <div className="text-sm text-muted-foreground">Saldo: {tokenBalance} token</div>
+    <div className="p-6 border border-gray-300 rounded-xl bg-background space-y-4">
+      <h2 className="text-xl font-semibold text-black flex items-center gap-2">
+        <CircleDollarSign></CircleDollarSign>
+        Sell Token
+      </h2>
+      <div className="text-sm text-muted-foreground">Your Balance: {tokenBalance} {symbol}</div>
 
       <input
         type="number"
@@ -74,16 +81,16 @@ export function SellTokenSection({ tokenAddress }: Props) {
         step="0.01"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        placeholder="Jumlah token"
-        className="w-full p-2 bg-muted text-foreground rounded border border-yellow-400"
+        placeholder="To be Sold Token"
+        className="w-full p-2 bg-muted text-foreground rounded border border-gray-400"
       />
 
       <button
         onClick={handleSell}
         disabled={!amount || parseFloat(amount) <= 0}
-        className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
+        className="w-full bg-black hover:bg-gray-700 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
       >
-        Jual Token
+        Sell Token
       </button>
     </div>
   )

@@ -43,7 +43,7 @@ export default function SetRewardPage() {
         params: [
           BigInt(minPurchase),
           BigInt(minHold),
-          holdDurationInSeconds, // ✅ sudah dikali 86400
+          holdDurationInSeconds,
           uriPurchase,
           uriHold,
         ],
@@ -64,20 +64,20 @@ export default function SetRewardPage() {
       <h1 className="text-2xl font-bold mb-4">Set Reward Conditions</h1>
 
       <div className="space-y-2">
-        <Label>Minimum Purchase (wei)</Label>
+        <Label>Minimum Token Purchase</Label>
         <Input
           value={minPurchase}
           onChange={(e) => setMinPurchase(e.target.value)}
-          placeholder="1000000000000000000"
+          placeholder="1000"
         />
       </div>
 
       <div className="space-y-2">
-        <Label>Minimum Hold (wei)</Label>
+        <Label>Minimum Token Hold</Label>
         <Input
           value={minHold}
           onChange={(e) => setMinHold(e.target.value)}
-          placeholder="5000000000000000000"
+          placeholder="5000"
         />
       </div>
 
@@ -95,7 +95,7 @@ export default function SetRewardPage() {
         <Input
           value={uriPurchase}
           onChange={(e) => setUriPurchase(e.target.value)}
-          placeholder="ipfs://..."
+          placeholder="CID"
         />
       </div>
 
@@ -104,7 +104,7 @@ export default function SetRewardPage() {
         <Input
           value={uriHold}
           onChange={(e) => setUriHold(e.target.value)}
-          placeholder="ipfs://..."
+          placeholder="CID"
         />
       </div>
 

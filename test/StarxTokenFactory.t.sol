@@ -19,7 +19,7 @@ contract StarxTokenFactoryTest is Test {
 
         emit StarxTokenFactory.StarxTokenCreated(artist, address(0));
 
-        factory.createStarxToken("ArtistToken", "ART", 1000, 0.01 ether, "google.com");
+        factory.createStarxToken("ArtistToken", "ART", 1000, 0.01 ether, "google.com", "test");
 
         address[] memory tokens = factory.getAllTokens();
         assertEq(tokens.length, 1, "Token count should be 1");
@@ -33,9 +33,9 @@ contract StarxTokenFactoryTest is Test {
 
     function testMultipleTokenCreation() public {
         vm.startPrank(artist);
-        factory.createStarxToken("T1", "T1", 1000, 0.01 ether, "google.com");
-        factory.createStarxToken("T2", "T2", 2000, 0.02 ether, "google.com");
-        factory.createStarxToken("T3", "T3", 3000, 0.03 ether, "google.com");
+        factory.createStarxToken("T1", "T1", 1000, 0.01 ether, "google.com", "s");
+        factory.createStarxToken("T2", "T2", 2000, 0.02 ether, "google.com", "s");
+        factory.createStarxToken("T3", "T3", 3000, 0.03 ether, "google.com", "s");
         vm.stopPrank();
 
         address[] memory tokens = factory.getAllTokens();
@@ -54,6 +54,7 @@ contract StarxTokenFactoryTest is Test {
             "STRX", 
             100, 
             1e15,
+            "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/bafybeiapbutbxfirki6qqydm7n3ynznoy7xjl4y5imzpuu5qqgjqm6si6i",
             "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/bafybeiapbutbxfirki6qqydm7n3ynznoy7xjl4y5imzpuu5qqgjqm6si6i"
         );
 

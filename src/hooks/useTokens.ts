@@ -13,6 +13,7 @@ export interface TokenInfo {
   symbol: string;
   price: string;
   imageURI: string;
+  descURI: string;
 }
 
 export function useTokens() {
@@ -30,11 +31,12 @@ export function useTokens() {
           abi: tokenABI,
         });
 
-        const [name, symbol, priceRaw, tokenImageURI] = await Promise.all([
+        const [name, symbol, priceRaw, tokenImageURI, descriptionURI] = await Promise.all([
           readContract({ contract: tokenContract, method: "name" }),
           readContract({ contract: tokenContract, method: "symbol" }),
           readContract({ contract: tokenContract, method: "pricePerToken" }),
           readContract({ contract: tokenContract, method: "tokenImageURI" }),
+          readContract({ contract: tokenContract, method: "descriptionURI" }),
         ]);
 
         return {
@@ -43,6 +45,7 @@ export function useTokens() {
           symbol: symbol as string,
           price: formatEther(priceRaw as bigint),
           imageURI: tokenImageURI as string,
+          descURI: descriptionURI as string,
         };
       } catch {
         return null;
@@ -56,7 +59,7 @@ export function useTokens() {
       try {
         const factoryContract = getContract({
           client,
-          chain: localhost,
+          chain,
           address: FACTORY_ADDRESS,
           abi: factoryABI,
         });
@@ -79,7 +82,7 @@ export function useTokens() {
             contract: {
               address: FACTORY_ADDRESS,
               abi: factoryABI,
-              chain: localhost,
+              chain,
             },
             method: "function getAllTokens() view returns (address[])",
           });

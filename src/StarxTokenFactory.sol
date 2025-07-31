@@ -15,7 +15,9 @@ contract StarxTokenFactory {
         string memory symbol,
         uint256 cap,
         uint256 tokenPriceInWei,
-        string memory tokenImageURI
+        string memory tokenImageURI,
+        string memory descriptionURI
+
     ) external {
         StarxToken token = new StarxToken(
             name,
@@ -23,12 +25,13 @@ contract StarxTokenFactory {
             cap,
             tokenPriceInWei,
             msg.sender,
-            tokenImageURI
+            tokenImageURI,
+            descriptionURI
         );
 
         allTokens.push(address(token));
         isArtist[msg.sender] = true;
-        tokensByOwner[msg.sender].push(address(token)); // ✅ tambahkan ini
+        tokensByOwner[msg.sender].push(address(token));
 
         emit StarxTokenCreated(msg.sender, address(token));
     }

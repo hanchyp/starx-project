@@ -36,7 +36,9 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center space-x-12">
             <Link href="/" className="flex items-center">
-              <div className="text-2xl font-light text-foreground">STARX</div>
+              <div className="text-2xl font-light text-foreground">
+                STAR<span className="text-yellow-400 font-extralight">X</span>
+                </div>
             </Link>
 
             {/* Desktop Navigation */}
@@ -75,12 +77,6 @@ export function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 bg-popover border-border rounded-xl shadow-lg">
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center text-popover-foreground hover:text-foreground">
-                      <User className="mr-3 h-4 w-4" />
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link
                       href="/dashboard"
                       className="flex items-center text-popover-foreground hover:text-foreground"
@@ -105,86 +101,7 @@ export function Navbar() {
               </DropdownMenu>
             )}
           </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-4">
-            {account && (
-              <Avatar className="h-7 w-7 border border-border">
-                <AvatarFallback className="bg-muted text-muted-foreground text-sm">
-                  {account?.address?.slice(2, 4)?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2"
-            >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
-            </Button>
-          </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {navigation.map((item) => {
-                const Icon = item.icon
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                      pathname === item.href
-                        ? "text-foreground bg-muted"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Icon className="mr-3 h-5 w-5" />
-                    {item.name}
-                  </Link>
-                )
-              })}
-              
-              <div className="border-t border-border pt-4 mt-4">
-                {!account ? (
-                  <div className="px-3">
-                    <ConnectButton client={client} chain={chain} />
-                  </div>
-                ) : (
-                  <div className="space-y-1">
-                    <div className="px-3 py-2">
-                      <ConnectButton client={client} chain={chain} />
-                    </div>
-                    <Link
-                      href="/profile"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
-                    >
-                      <User className="mr-3 h-5 w-5" />
-                      Profile
-                    </Link>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
-                    >
-                      <LayoutDashboard className="mr-3 h-5 w-5" />
-                      Artist Dashboard
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </nav>
   )

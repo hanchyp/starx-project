@@ -6,6 +6,7 @@ import { parseEther } from "viem"
 import { useActiveAccount } from "thirdweb/react"
 import { client, chain } from "@/app/client"
 import { tokenABI } from "@/abi/token"
+import { Send } from "lucide-react"
 
 interface Props {
   tokenAddress: string
@@ -46,8 +47,11 @@ export function TransferTokenSection({ tokenAddress }: Props) {
   }
 
   return (
-    <div className="mt-10 p-6 border border-blue-400 bg-blue-50 rounded-xl space-y-4">
-      <h2 className="text-xl font-semibold text-blue-600">Transfer Token</h2>
+    <div className="p-6 border border-gray-300 rounded-xl bg-background space-y-4">
+      <h2 className="text-xl font-semibold text-black flex items-center gap-2">
+        <Send/>
+        Transfer Token
+      </h2>
 
       <div>
         <label className="text-sm">Recipient Address</label>
@@ -56,7 +60,7 @@ export function TransferTokenSection({ tokenAddress }: Props) {
           value={recipient}
           onChange={(e) => setRecipient(e.target.value)}
           placeholder="0x..."
-          className="w-full p-2 bg-muted text-foreground rounded border border-blue-400"
+          className="w-full p-2 bg-muted text-foreground rounded border border-gray-400"
         />
       </div>
 
@@ -67,16 +71,16 @@ export function TransferTokenSection({ tokenAddress }: Props) {
           step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="w-full p-2 bg-muted text-foreground rounded border border-blue-400"
+          className="w-full p-2 bg-muted text-foreground rounded border border-gray-400"
         />
       </div>
 
       <button
         onClick={handleTransfer}
         disabled={!recipient || !amount}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-medium disabled:opacity-50"
+        className="w-full bg-black hover:bg-gray-700 text-white px-4 py-2 rounded font-medium disabled:opacity-60"
       >
-        Kirim Token
+        Send Token
       </button>
     </div>
   )

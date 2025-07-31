@@ -1,1 +1,1 @@
-testCannotClaimHoldRewardTooSoon|testClaimHoldRewardAfterDuration|testNonOwnerCannotWithdraw|testSetRewardConditions|testWithdrawByOwner
+testOwnerBalance

@@ -8,6 +8,7 @@ export const tokenABI = [
       { internalType: "uint256", name: "_pricePerToken", type: "uint256" },
       { internalType: "address", name: "_initialOwner", type: "address" },
       { internalType: "string", name: "_tokenImageURI", type: "string" },
+      { internalType: "string", name: "_descriptionURI", type: "string" },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -31,6 +32,20 @@ export const tokenABI = [
 {
   "inputs": [],
   "name": "tokenImageURI",
+  "outputs": [
+    {
+      "internalType": "string",
+      "name": "",
+      "type": "string"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+
+{
+  "inputs": [],
+  "name": "descriptionURI",
   "outputs": [
     {
       "internalType": "string",
