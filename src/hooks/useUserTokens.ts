@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react"
-import { getContract, readContract } from "thirdweb"
-import { factoryABI } from "@/abi/factory"
-import { tokenABI } from "@/abi/token"
-import { client, chain } from "@/app/client"
-import { FACTORY_ADDRESS } from "@/constants"
+import { useEffect, useState } from "react";
+import { getContract, readContract } from "thirdweb";
+import { factoryABI } from "@/abi/factory";
+import { tokenABI } from "@/abi/token";
+import { client, chain } from "@/app/client";
+import { FACTORY_ADDRESS } from "@/constants";
 
 type TokenInfo = {
-  address: string
-  balance: string
-  name: string
-  symbol: string
-}
+  address: string;
+  balance: string;
+  name: string;
+  symbol: string;
+};
 
 export function useUserTokens(userAddress: string) {
-  const [tokens, setTokens] = useState<TokenInfo[]>([])
-  const [loading, setLoading] = useState(true)
+  const [tokens, setTokens] = useState<TokenInfo[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userAddress) return
+    if (!userAddress) return;
 
     async function fetchTokens() {
-      setLoading(true)
+      setLoading(true);
 
       try {
         const factory = getContract({
@@ -28,16 +28,17 @@ export function useUserTokens(userAddress: string) {
           abi: factoryABI,
           client,
           chain,
-        })
+        });
 
-        const allTokenAddresses: string[] = [...await readContract({
-          contract: factory,
-          method: "getAllTokens",
-          params: [],
-        })]
+        const allTokenAddresses: string[] = [
+          ...(await readContract({
+            contract: factory,
+            method: "getAllTokens",
+            params: [],
+          })),
+        ];
 
-
-        const results: TokenInfo[] = []
+        const results: TokenInfo[] = [];
 
         for (const tokenAddr of allTokenAddresses) {
           const token = getContract({
@@ -45,13 +46,17 @@ export function useUserTokens(userAddress: string) {
             abi: tokenABI,
             client,
             chain,
-          })
+          });
 
           const [balance, name, symbol] = await Promise.all([
-            readContract({ contract: token, method: "balanceOf", params: [userAddress] }),
+            readContract({
+              contract: token,
+              method: "balanceOf",
+              params: [userAddress],
+            }),
             readContract({ contract: token, method: "name" }),
             readContract({ contract: token, method: "symbol" }),
-          ])
+          ]);
 
           if (BigInt(balance) > 0n) {
             results.push({
@@ -59,20 +64,20 @@ export function useUserTokens(userAddress: string) {
               balance: balance.toString(),
               name: name as string,
               symbol: symbol as string,
-            })
+            });
           }
         }
 
-        setTokens(results)
+        setTokens(results);
       } catch (err) {
-        console.error("Error fetching held tokens:", err)
+        console.error("Error fetching held tokens:", err);
       }
 
-      setLoading(false)
+      setLoading(false);
     }
 
-    fetchTokens()
-  }, [userAddress])
+    fetchTokens();
+  }, [userAddress]);
 
-  return { tokens, loading }
+  return { tokens, loading };
 }

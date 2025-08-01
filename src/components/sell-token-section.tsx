@@ -1,62 +1,80 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useActiveAccount } from "thirdweb/react"
-import { getContract, readContract, sendTransaction, prepareContractCall } from "thirdweb"
-import { parseEther, formatEther } from "viem"
-import { client, chain } from "@/app/client"
-import { tokenABI } from "@/abi/token"
-import { CircleDollarSign } from "lucide-react"
+import { useEffect, useState } from "react";
+import { useActiveAccount } from "thirdweb/react";
+import {
+  getContract,
+  readContract,
+  sendTransaction,
+  prepareContractCall,
+} from "thirdweb";
+import { parseEther, formatEther } from "viem";
+import { client, chain } from "@/app/client";
+import { tokenABI } from "@/abi/token";
+import { CircleDollarSign } from "lucide-react";
 
 interface Props {
-  tokenAddress: string
+  tokenAddress: string;
 }
 
 export function SellTokenSection({ tokenAddress }: Props) {
-  const account = useActiveAccount()
-  const [amount, setAmount] = useState("")
-  const [tokenBalance, setTokenBalance] = useState("0")
-  const [ownerAddress, setOwnerAddress] = useState("")
-  const [symbol, setSymbol] = useState("")
+  const account = useActiveAccount();
+  const [amount, setAmount] = useState("");
+  const [tokenBalance, setTokenBalance] = useState("0");
+  const [ownerAddress, setOwnerAddress] = useState("");
+  const [symbol, setSymbol] = useState("");
 
-  const contract = getContract({ client, address: tokenAddress, chain, abi: tokenABI })
+  const contract = getContract({
+    client,
+    address: tokenAddress,
+    chain,
+    abi: tokenABI,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!account) return
+      if (!account) return;
       const [owner, balance, symbol] = await Promise.all([
         readContract({ contract, method: "owner" }),
-        readContract({ contract, method: "balanceOf", params: [account.address] }),
+        readContract({
+          contract,
+          method: "balanceOf",
+          params: [account.address],
+        }),
         readContract({ contract, method: "symbol" }),
-      ])
-      setOwnerAddress(owner)
-      setTokenBalance(formatEther(balance))
-      setSymbol(symbol)
-    }
-    fetchData()
-  }, [account, contract])
+      ]);
+      setOwnerAddress(owner);
+      setTokenBalance(formatEther(balance));
+      setSymbol(symbol);
+    };
+    fetchData();
+  }, [account, contract]);
 
   const handleSell = async () => {
-    if (!account || !amount) return
-    const parsedAmount = parseEther(amount)
+    if (!account || !amount) return;
+    const parsedAmount = parseEther(amount);
 
     try {
       const transaction = prepareContractCall({
         contract,
         method: "sellToken",
         params: [parsedAmount],
-      })
-      const tx = await sendTransaction({ transaction, account })
-      alert(`Token berhasil dijual! TX: ${tx.transactionHash}`)
-      setTimeout(() => window.location.reload(), 2000)
+      });
+      const tx = await sendTransaction({ transaction, account });
+      alert(`Token berhasil dijual! TX: ${tx.transactionHash}`);
+      setTimeout(() => window.location.reload(), 2000);
     } catch (err: any) {
-      console.error("Sell failed:", err)
-      alert("Gagal menjual token: " + err?.message)
+      console.error("Sell failed:", err);
+      alert("Gagal menjual token: " + err?.message);
     }
-  }
+  };
 
   if (!account) {
-    return <div className="text-sm text-center text-muted-foreground">Connect wallet untuk jual token</div>
+    return (
+      <div className="text-sm text-center text-muted-foreground">
+        Connect wallet untuk jual token
+      </div>
+    );
   }
 
   if (account.address.toLowerCase() === ownerAddress.toLowerCase()) {
@@ -64,7 +82,7 @@ export function SellTokenSection({ tokenAddress }: Props) {
       <div className="p-6 border border-yellow-400 bg-yellow-50 rounded-xl text-yellow-700">
         As owner, you can't sell your own token.
       </div>
-    )
+    );
   }
 
   return (
@@ -73,7 +91,9 @@ export function SellTokenSection({ tokenAddress }: Props) {
         <CircleDollarSign></CircleDollarSign>
         Sell Token
       </h2>
-      <div className="text-sm text-muted-foreground">Your Balance: {tokenBalance} {symbol}</div>
+      <div className="text-sm text-muted-foreground">
+        Your Balance: {tokenBalance} {symbol}
+      </div>
 
       <input
         type="number"
@@ -93,5 +113,5 @@ export function SellTokenSection({ tokenAddress }: Props) {
         Sell Token
       </button>
     </div>
-  )
+  );
 }

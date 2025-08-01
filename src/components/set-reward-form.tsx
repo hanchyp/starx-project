@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { tokenABI } from "@/abi/token"
-import { useActiveAccount } from "thirdweb/react"
-import { getContract, prepareContractCall, sendTransaction } from "thirdweb"
-import { client, chain } from "@/app/client"
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { tokenABI } from "@/abi/token";
+import { useActiveAccount } from "thirdweb/react";
+import { getContract, prepareContractCall, sendTransaction } from "thirdweb";
+import { client, chain } from "@/app/client";
 
 export default function SetRewardForm() {
-  const { tokenAddress } = useParams()
-  const account = useActiveAccount()
+  const { tokenAddress } = useParams();
+  const account = useActiveAccount();
 
-  const [minPurchase, setMinPurchase] = useState("")
-  const [minHoldAmount, setMinHoldAmount] = useState("")
-  const [minHoldDuration, setMinHoldDuration] = useState("")
-  const [purchaseURI, setPurchaseURI] = useState("")
-  const [holdURI, setHoldURI] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [minPurchase, setMinPurchase] = useState("");
+  const [minHoldAmount, setMinHoldAmount] = useState("");
+  const [minHoldDuration, setMinHoldDuration] = useState("");
+  const [purchaseURI, setPurchaseURI] = useState("");
+  const [holdURI, setHoldURI] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!account || typeof tokenAddress !== "string") return
-    setLoading(true)
+    if (!account || typeof tokenAddress !== "string") return;
+    setLoading(true);
 
     try {
       const contract = getContract({
@@ -32,7 +32,7 @@ export default function SetRewardForm() {
         chain,
         address: tokenAddress,
         abi: tokenABI,
-      })
+      });
 
       const tx = prepareContractCall({
         contract,
@@ -44,19 +44,19 @@ export default function SetRewardForm() {
           purchaseURI,
           holdURI,
         ],
-      })
+      });
 
-      await sendTransaction({ account, transaction: tx })
-      alert("Reward condition updated successfully!")
+      await sendTransaction({ account, transaction: tx });
+      alert("Reward condition updated successfully!");
     } catch (err) {
-      console.error("Error setting reward:", err)
-      alert("Failed to set reward conditions.")
+      console.error("Error setting reward:", err);
+      alert("Failed to set reward conditions.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  if (!tokenAddress) return <p>Invalid token address.</p>
+  if (!tokenAddress) return <p>Invalid token address.</p>;
 
   return (
     <Card>
@@ -109,5 +109,5 @@ export default function SetRewardForm() {
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useTokens } from "@/hooks/useTokens"
-import { ArtistCoinCard } from "./artist-coin-card"
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTokens } from "@/hooks/useTokens";
+import { ArtistCoinCard } from "./artist-coin-card";
 
 interface Metadata {
   image?: string;
@@ -13,86 +13,94 @@ interface Metadata {
 }
 
 export function ArtistCoinCarousel() {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const [canScrollLeft, setCanScrollLeft] = useState(false)
-  const [canScrollRight, setCanScrollRight] = useState(true)
-  const { tokens, isLoading, error } = useTokens()
-  const [metadatas, setMetadatas] = useState<Record<string, Metadata>>({})
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const { tokens, isLoading, error } = useTokens();
+  const [metadatas, setMetadatas] = useState<Record<string, Metadata>>({});
 
   useEffect(() => {
     const fetchMetadata = async () => {
       const entries = await Promise.all(
         tokens.map(async (token) => {
           try {
-            const res = await fetch(token.descURI)
-            const json = await res.json()
-            return [token.address, json]
+            const res = await fetch(token.descURI);
+            const json = await res.json();
+            return [token.address, json];
           } catch (err) {
-            console.error("Failed to fetch metadata for", token.address, err)
-            return [token.address, null]
+            console.error("Failed to fetch metadata for", token.address, err);
+            return [token.address, null];
           }
         })
-      )
-      setMetadatas(Object.fromEntries(entries))
-    }
+      );
+      setMetadatas(Object.fromEntries(entries));
+    };
     if (tokens.length > 0) {
-      fetchMetadata()
+      fetchMetadata();
     }
-  }, [tokens])
+  }, [tokens]);
 
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
-      const scrollAmount = 280
-      const newScrollLeft = scrollRef.current.scrollLeft + (direction === "right" ? scrollAmount : -scrollAmount)
+      const scrollAmount = 280;
+      const newScrollLeft =
+        scrollRef.current.scrollLeft +
+        (direction === "right" ? scrollAmount : -scrollAmount);
       scrollRef.current.scrollTo({
         left: newScrollLeft,
         behavior: "smooth",
-      })
+      });
     }
-  }
+  };
 
   const handleScroll = () => {
     if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current
-      setCanScrollLeft(scrollLeft > 0)
-      // A small buffer (e.g., 10px) to account for potential sub-pixel rendering or rounding issues
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10) 
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
-  }
+  };
 
-  // Update scroll state on mount and window resize
   useEffect(() => {
-    handleScroll(); // Initial check
+    handleScroll();
     const currentRef = scrollRef.current;
     if (currentRef) {
-      currentRef.addEventListener('resize', handleScroll);
+      currentRef.addEventListener("resize", handleScroll);
     }
     return () => {
       if (currentRef) {
-        currentRef.removeEventListener('resize', handleScroll);
+        currentRef.removeEventListener("resize", handleScroll);
       }
     };
-  }, [tokens]); // Re-run if tokens change, as content width might change
+  }, [tokens]);
 
   if (isLoading) {
-    return <div className="text-center text-muted-foreground py-8">Loading tokens...</div>
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        Loading tokens...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center text-red-500 py-8">Failed to load tokens: {error}</div>
+    return (
+      <div className="text-center text-red-500 py-8">
+        Failed to load tokens: {error}
+      </div>
+    );
   }
 
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header */}
       <div className="text-center mb-16">
-        <h2 className="text-3xl font-light text-foreground mb-3">Artist Tokens</h2>
+        <h2 className="text-3xl font-light text-foreground mb-3">
+          Artist Tokens
+        </h2>
         <p className="text-muted-foreground text-lg font-light max-w-2xl mx-auto">
           Discover and invest in your favorite artists
         </p>
       </div>
 
-      {/* Navigation Buttons */}
       <div className="absolute top-1/2 -translate-y-1/2 -left-6 z-10 hidden md:block">
         <Button
           variant="outline"
@@ -116,7 +124,6 @@ export function ArtistCoinCarousel() {
         </Button>
       </div>
 
-      {/* Carousel */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -124,8 +131,8 @@ export function ArtistCoinCarousel() {
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {tokens.map((token, index) => {
-          const metadata = metadatas[token.address]
-          if (!metadata) return null // Don't render if metadata is not yet loaded or failed
+          const metadata = metadatas[token.address];
+          if (!metadata) return null;
 
           return (
             <ArtistCoinCard
@@ -133,9 +140,9 @@ export function ArtistCoinCarousel() {
               token={token}
               metadata={metadata}
             />
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

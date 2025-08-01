@@ -1,14 +1,26 @@
-"use client"
+"use client";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Gift, Calendar, Music, Camera, Users, Disc3, Crown, MessageCircle, Video, Headphones } from "lucide-react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Gift,
+  Calendar,
+  Music,
+  Camera,
+  Users,
+  Disc3,
+  Crown,
+  MessageCircle,
+  Video,
+  Headphones,
+} from "lucide-react";
 
 const benefits = [
   {
     id: 1,
     title: "Free Merchandise",
-    description: "Exclusive artist merchandise delivered to your doorstep at no cost",
+    description:
+      "Exclusive artist merchandise delivered to your doorstep at no cost",
     icon: Gift,
     color: "bg-slate-100 text-slate-600",
     badge: "Popular",
@@ -16,7 +28,8 @@ const benefits = [
   {
     id: 2,
     title: "Early Access to Special Concerts",
-    description: "Get priority booking for intimate concerts and special performances",
+    description:
+      "Get priority booking for intimate concerts and special performances",
     icon: Calendar,
     color: "bg-slate-100 text-slate-600",
     badge: "Exclusive",
@@ -32,7 +45,8 @@ const benefits = [
   {
     id: 5,
     title: "Meet & Greet Opportunities",
-    description: "Personal meetings with the artist at select events and venues",
+    description:
+      "Personal meetings with the artist at select events and venues",
     icon: Users,
     color: "bg-slate-100 text-slate-600",
     badge: "VIP",
@@ -40,14 +54,16 @@ const benefits = [
   {
     id: 6,
     title: "Limited Edition Vinyl",
-    description: "Collector's edition vinyl records with unique artwork and packaging",
+    description:
+      "Collector's edition vinyl records with unique artwork and packaging",
     icon: Disc3,
     color: "bg-slate-100 text-slate-600",
   },
   {
     id: 7,
     title: "VIP Concert Experience",
-    description: "Premium seating, backstage access, and exclusive concert amenities",
+    description:
+      "Premium seating, backstage access, and exclusive concert amenities",
     icon: Crown,
     color: "bg-slate-100 text-slate-600",
     badge: "Premium",
@@ -55,43 +71,50 @@ const benefits = [
   {
     id: 8,
     title: "Personalized Messages",
-    description: "Custom audio or video messages from the artist on special occasions",
+    description:
+      "Custom audio or video messages from the artist on special occasions",
     icon: MessageCircle,
     color: "bg-slate-100 text-slate-600",
   },
   {
     id: 9,
     title: "Exclusive Livestream Access",
-    description: "Private livestream performances and Q&A sessions with the artist",
+    description:
+      "Private livestream performances and Q&A sessions with the artist",
     icon: Video,
     color: "bg-slate-100 text-slate-600",
   },
   {
     id: 10,
     title: "Unreleased Track Library",
-    description: "Access to a growing collection of unreleased songs and acoustic versions",
+    description:
+      "Access to a growing collection of unreleased songs and acoustic versions",
     icon: Headphones,
     color: "bg-slate-100 text-slate-600",
   },
-]
+];
 
 export default function ArtistBenefits() {
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Header Section */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Exclusive Fan Benefits</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          Exclusive Fan Benefits
+        </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Join our STARX and unlock amazing perks designed exclusively for most dedicated fans of your idols!
+          Join our STARX and unlock amazing perks designed exclusively for most
+          dedicated fans of your idols!
         </p>
       </div>
 
-      {/* Benefits Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {benefits.map((benefit) => {
-          const IconComponent = benefit.icon
+          const IconComponent = benefit.icon;
           return (
-            <Card key={benefit.id} className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <Card
+              key={benefit.id}
+              className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+            >
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div
@@ -110,14 +133,15 @@ export default function ArtistBenefits() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
+                <p className="text-gray-600 leading-relaxed">
+                  {benefit.description}
+                </p>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
 
-      {/* Call to Action */}
       <div className="text-center mt-16">
         <div className="bg-black rounded-lg p-8 text-white">
           <h2 className="text-2xl font-bold mb-4">Ready to Join?</h2>
@@ -135,10 +159,9 @@ export default function ArtistBenefits() {
                 Learn More
               </button>
             </a>
-            
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

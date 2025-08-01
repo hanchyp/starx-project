@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { readContract, getContract } from "thirdweb";
-import { localhost } from "thirdweb/chains";
 import { chain, client } from "@/app/client";
 import { factoryABI } from "@/abi/factory";
 import { tokenABI } from "@/abi/token";
@@ -22,7 +21,9 @@ export function useTokens() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchTokenDetail(address: string): Promise<TokenInfo | null> {
+    async function fetchTokenDetail(
+      address: string
+    ): Promise<TokenInfo | null> {
       try {
         const tokenContract = getContract({
           client,
@@ -31,13 +32,14 @@ export function useTokens() {
           abi: tokenABI,
         });
 
-        const [name, symbol, priceRaw, tokenImageURI, descriptionURI] = await Promise.all([
-          readContract({ contract: tokenContract, method: "name" }),
-          readContract({ contract: tokenContract, method: "symbol" }),
-          readContract({ contract: tokenContract, method: "pricePerToken" }),
-          readContract({ contract: tokenContract, method: "tokenImageURI" }),
-          readContract({ contract: tokenContract, method: "descriptionURI" }),
-        ]);
+        const [name, symbol, priceRaw, tokenImageURI, descriptionURI] =
+          await Promise.all([
+            readContract({ contract: tokenContract, method: "name" }),
+            readContract({ contract: tokenContract, method: "symbol" }),
+            readContract({ contract: tokenContract, method: "pricePerToken" }),
+            readContract({ contract: tokenContract, method: "tokenImageURI" }),
+            readContract({ contract: tokenContract, method: "descriptionURI" }),
+          ]);
 
         return {
           address,
@@ -98,9 +100,9 @@ export function useTokens() {
         const details = await Promise.all(tokenAddresses.map(fetchTokenDetail));
         const validTokens = details.filter((t): t is TokenInfo => t !== null);
         setTokenDetails(validTokens);
-
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error occurred";
         setError(errorMessage);
         setTokenDetails([]);
       } finally {

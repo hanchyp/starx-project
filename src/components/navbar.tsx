@@ -1,31 +1,34 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { User, Music, Gift, LayoutDashboard, Home, LogOut, Menu, X } from "lucide-react"
-import { ConnectButton, useActiveAccount, useActiveWallet, useDisconnect } from "thirdweb/react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Music, Gift, LayoutDashboard, Home, LogOut } from "lucide-react";
+import {
+  ConnectButton,
+  useActiveAccount,
+  useActiveWallet,
+  useDisconnect,
+} from "thirdweb/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { chain, client } from "@/app/client"
-import { useState } from "react"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { chain, client } from "@/app/client";
 
 export function Navbar() {
-  const pathname = usePathname()
-  const account = useActiveAccount()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname();
+  const account = useActiveAccount();
 
   const navigation = [
     { name: "Home", href: "/", icon: Home },
     { name: "Artists", href: "/artists", icon: Music },
     { name: "Benefits", href: "/benefits", icon: Gift },
-  ]
+  ];
   const { disconnect } = useDisconnect();
   const wallet = useActiveWallet();
 
@@ -33,22 +36,24 @@ export function Navbar() {
     <nav className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container mx-auto px-6">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center space-x-12">
             <Link href="/" className="flex items-center">
-              <div className="text-2xl font-light text-foreground">
-                STAR<span className="text-yellow-400 font-extralight">X</span>
-                </div>
+              <img
+                src="/images/logo.png"
+                alt="starx-logo"
+                className="h-[35px] mx-auto block mt-2"
+              />
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={`text-sm font-medium transition-colors hover:text-foreground ${
-                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                    pathname === item.href
+                      ? "text-foreground"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {item.name}
@@ -57,25 +62,31 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             {!account ? (
               <ConnectButton client={client} chain={chain} />
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-3 hover:bg-muted rounded-xl px-4 h-10">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center space-x-3 hover:bg-muted rounded-xl px-4 h-10"
+                  >
                     <Avatar className="h-7 w-7 border border-border">
                       <AvatarFallback className="bg-muted text-muted-foreground text-sm">
                         {account?.address?.slice(2, 4)?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-foreground font-medium">
-                      {account?.address?.slice(0, 6)}...{account?.address?.slice(-4)}
+                      {account?.address?.slice(0, 6)}...
+                      {account?.address?.slice(-4)}
                     </span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-popover border-border rounded-xl shadow-lg">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 bg-popover border-border rounded-xl shadow-lg"
+                >
                   <DropdownMenuItem asChild>
                     <Link
                       href="/dashboard"
@@ -89,7 +100,7 @@ export function Navbar() {
                   <DropdownMenuItem
                     onClick={() => {
                       if (wallet) {
-                        disconnect(wallet)
+                        disconnect(wallet);
                       }
                     }}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
@@ -108,5 +119,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }

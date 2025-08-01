@@ -1,26 +1,26 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
-import { ThirdwebProvider } from "thirdweb/react"
-import { Navbar } from "@/components/navbar"
-import { chain, client } from "./client"
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThirdwebProvider } from "thirdweb/react";
+import { Navbar } from "@/components/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["200", "300", "400", "500", "600", "700"],
   display: "swap",
-})
+});
 
 export const metadata: Metadata = {
   title: "STARX - Artist Token Platform",
-  description: "Invest in artist tokens and unlock exclusive experiences with your favorite musicians",
-}
+  description:
+    "Invest in artist tokens and unlock exclusive experiences with your favorite musicians",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -33,5 +33,5 @@ export default function RootLayout({
         </ThirdwebProvider>
       </body>
     </html>
-  )
+  );
 }

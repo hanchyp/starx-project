@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import { getContract, readContract } from "thirdweb"
-import { tokenABI } from "@/abi/token"
-import { formatEther, parseEther } from "viem"
-import { useActiveAccount } from "thirdweb/react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Loader } from "lucide-react"
-import { chain, client } from "@/app/client"
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { getContract, readContract } from "thirdweb";
+import { tokenABI } from "@/abi/token";
+import { formatEther, parseEther } from "viem";
+import { useActiveAccount } from "thirdweb/react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Loader } from "lucide-react";
+import { chain, client } from "@/app/client";
 
-const GATEWAY = "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/"
+const GATEWAY = "https://silver-permanent-goldfish-229.mypinata.cloud/ipfs/";
 
 export default function ArtistPage() {
-  const { tokenAddress } = useParams()
-  const account = useActiveAccount()
+  const { tokenAddress } = useParams();
+  const account = useActiveAccount();
 
-  const [name, setName] = useState("")
-  const [symbol, setSymbol] = useState("")
-  const [price, setPrice] = useState("")
-  const [balance, setBalance] = useState<bigint>(0n)
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
+  const [price, setPrice] = useState("");
+  const [balance, setBalance] = useState<bigint>(0n);
 
-  const [minPurchase, setMinPurchase] = useState("")
-  const [minHold, setMinHold] = useState("")
-  const [minHoldDuration, setMinHoldDuration] = useState(0)
-  const [holdStart, setHoldStart] = useState<number>(0)
+  const [minPurchase, setMinPurchase] = useState("");
+  const [minHold, setMinHold] = useState("");
+  const [minHoldDuration, setMinHoldDuration] = useState(0);
+  const [holdStart, setHoldStart] = useState<number>(0);
 
-  const [claimedPurchase, setClaimedPurchase] = useState(false)
-  const [claimedHold, setClaimedHold] = useState(false)
+  const [claimedPurchase, setClaimedPurchase] = useState(false);
+  const [claimedHold, setClaimedHold] = useState(false);
 
-  const [purchaseReward, setPurchaseReward] = useState<any>(null)
-  const [holdReward, setHoldReward] = useState<any>(null)
+  const [purchaseReward, setPurchaseReward] = useState<any>(null);
+  const [holdReward, setHoldReward] = useState<any>(null);
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!tokenAddress || !account) return
+    if (!tokenAddress || !account) return;
 
     async function fetchData() {
       try {
-        setLoading(true)
+        setLoading(true);
 
         const contract = getContract({
           address: tokenAddress as string,
           abi: tokenABI,
           client,
-          chain
-        })
+          chain,
+        });
 
-        if (!account) return
-        
+        if (!account) return;
+
         const [
           name,
           symbol,
@@ -73,53 +73,80 @@ export default function ArtistPage() {
           readContract({ contract, method: "minHoldDuration" }),
           readContract({ contract, method: "purchaseRewardURI" }),
           readContract({ contract, method: "holdRewardURI" }),
-          readContract({ contract, method: "balanceOf", params: [account.address] }),
-          readContract({ contract, method: "holdingStart", params: [account.address] }),
-          readContract({ contract, method: "claimedPurchaseReward", params: [account.address] }),
-          readContract({ contract, method: "claimedHoldReward", params: [account.address] }),
-        ])
+          readContract({
+            contract,
+            method: "balanceOf",
+            params: [account.address],
+          }),
+          readContract({
+            contract,
+            method: "holdingStart",
+            params: [account.address],
+          }),
+          readContract({
+            contract,
+            method: "claimedPurchaseReward",
+            params: [account.address],
+          }),
+          readContract({
+            contract,
+            method: "claimedHoldReward",
+            params: [account.address],
+          }),
+        ]);
 
-        setName(name as string)
-        setSymbol(symbol as string)
-        setPrice(formatEther(price as bigint))
-        setMinPurchase(formatEther(minPurchase as bigint))
-        setMinHold(formatEther(minHold as bigint))
-        setMinHoldDuration(Number(minHoldDuration) / 86400)
-        setBalance(userBalance as bigint)
-        setHoldStart(Number(holdStart))
-        setClaimedPurchase(Boolean(claimedPurchase))
-        setClaimedHold(Boolean(claimedHold))
+        setName(name as string);
+        setSymbol(symbol as string);
+        setPrice(formatEther(price as bigint));
+        setMinPurchase(formatEther(minPurchase as bigint));
+        setMinHold(formatEther(minHold as bigint));
+        setMinHoldDuration(Number(minHoldDuration) / 86400);
+        setBalance(userBalance as bigint);
+        setHoldStart(Number(holdStart));
+        setClaimedPurchase(Boolean(claimedPurchase));
+        setClaimedHold(Boolean(claimedHold));
 
-        // Fetch metadata from IPFS
         if ((purchaseURI as string) === "") {
-          setPurchaseReward({ name: "Not set", description: "Artist didn't set the purchase reward yet.", image: "" })
+          setPurchaseReward({
+            name: "Not set",
+            description: "Artist didn't set the purchase reward yet.",
+            image: "",
+          });
         } else {
-          const purchaseMeta = await fetch(`${GATEWAY}${(purchaseURI as string).replace("ipfs://", "")}`).then(res => res.json())
-          setPurchaseReward(purchaseMeta)
+          const purchaseMeta = await fetch(
+            `${GATEWAY}${(purchaseURI as string).replace("ipfs://", "")}`
+          ).then((res) => res.json());
+          setPurchaseReward(purchaseMeta);
         }
 
         if ((holdURI as string) === "") {
-          setHoldReward({ name: "Not set", description: "Artist didn't set the hold reward yet.", image: "" })
+          setHoldReward({
+            name: "Not set",
+            description: "Artist didn't set the hold reward yet.",
+            image: "",
+          });
         } else {
-          const holdMeta = await fetch(`${GATEWAY}${(holdURI as string).replace("ipfs://", "")}`).then(res => res.json())
-          setHoldReward(holdMeta)
+          const holdMeta = await fetch(
+            `${GATEWAY}${(holdURI as string).replace("ipfs://", "")}`
+          ).then((res) => res.json());
+          setHoldReward(holdMeta);
         }
       } catch (err) {
-        console.error("Error fetching token data", err)
+        console.error("Error fetching token data", err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    fetchData()
-  }, [tokenAddress, account])
+    fetchData();
+  }, [tokenAddress, account]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader className="animate-spin" />
       </div>
-    )
+    );
   }
 
   return (
@@ -131,7 +158,9 @@ export default function ArtistPage() {
         <CardContent className="space-y-2">
           <p>$ {symbol}</p>
           <p>Price per Token: {price} ETH</p>
-          <p>Your Balance: {formatEther(balance)} {symbol}</p>
+          <p>
+            Your Balance: {formatEther(balance)} {symbol}
+          </p>
         </CardContent>
       </Card>
 
@@ -145,7 +174,9 @@ export default function ArtistPage() {
           <CardContent className="flex items-start justify-between gap-6">
             <div className="flex-1">
               <p className="font-semibold">{purchaseReward.name}</p>
-              <p className="text-sm text-gray-500">{purchaseReward.description}</p>
+              <p className="text-sm text-gray-500">
+                {purchaseReward.description}
+              </p>
             </div>
 
             {purchaseReward.image && (
@@ -155,9 +186,7 @@ export default function ArtistPage() {
                 className="rounded-lg w-32 md:w-40 object-cover"
               />
             )}
-
           </CardContent>
-
         </Card>
       )}
 
@@ -173,7 +202,9 @@ export default function ArtistPage() {
             <CardContent className="space-y-2">
               <p className="font-semibold">{holdReward.name}</p>
               <p className="text-sm text-gray-500">{holdReward.description}</p>
-              <p className="text-sm">Requires holding for {minHoldDuration} days</p>
+              <p className="text-sm">
+                Requires holding for {minHoldDuration} days
+              </p>
               {holdReward.image && (
                 <img
                   src={`${GATEWAY}${holdReward.image.replace("ipfs://", "")}`}
@@ -185,5 +216,5 @@ export default function ArtistPage() {
           </Card>
         )}
     </div>
-  )
+  );
 }

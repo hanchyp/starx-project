@@ -1,108 +1,112 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useActiveAccount } from "thirdweb/react"
-import { getContract, prepareContractCall, readContract, sendTransaction } from "thirdweb"
-import { formatEther, parseEther } from "viem"
-import { client, chain } from "@/app/client"
-import { ShoppingCart } from "lucide-react"
-import { tokenABI } from "@/abi/token"
+import { useEffect, useState } from "react";
+import { useActiveAccount } from "thirdweb/react";
+import {
+  getContract,
+  prepareContractCall,
+  readContract,
+  sendTransaction,
+} from "thirdweb";
+import { formatEther, parseEther } from "viem";
+import { client, chain } from "@/app/client";
+import { ShoppingCart } from "lucide-react";
+import { tokenABI } from "@/abi/token";
 
 interface Props {
-  tokenAddress: string
-  pricePerToken: bigint
+  tokenAddress: string;
+  pricePerToken: bigint;
 }
 
 export function BuyTokenSection({ tokenAddress, pricePerToken }: Props) {
-  const account = useActiveAccount()
-  const [tokenAmount, setTokenAmount] = useState("")
-  const [requiredEth, setRequiredEth] = useState("0")
-  const [ownerAddress, setOwnerAddress] = useState("")
-  const [ownerBalance, setOwnerBalance] = useState("0")
+  const account = useActiveAccount();
+  const [tokenAmount, setTokenAmount] = useState("");
+  const [requiredEth, setRequiredEth] = useState("0");
+  const [ownerAddress, setOwnerAddress] = useState("");
+  const [ownerBalance, setOwnerBalance] = useState("0");
 
   const contract = getContract({
     client,
     address: tokenAddress,
     chain,
-    abi: tokenABI
-  })
+    abi: tokenABI,
+  });
 
-  // Fetch owner & balance
   useEffect(() => {
     const fetchOwnerAndBalance = async () => {
-      if (!account) return
+      if (!account) return;
 
       try {
         const owner = await readContract({
           contract,
           method: "owner",
-        })
+        });
 
-        setOwnerAddress(owner)
+        setOwnerAddress(owner);
 
         const balance = await readContract({
           contract,
           method: "balanceOf",
           params: [owner],
-        })
+        });
 
-        setOwnerBalance(formatEther(balance))
+        setOwnerBalance(formatEther(balance));
       } catch (err) {
-        console.error("Error fetching owner or balance:", err)
+        console.error("Error fetching owner or balance:", err);
       }
-    }
+    };
 
-    fetchOwnerAndBalance()
-  }, [account, contract])
+    fetchOwnerAndBalance();
+  }, [account, contract]);
 
-  // Calculate ETH required from token amount
   useEffect(() => {
     if (!tokenAmount || !pricePerToken) {
-      setRequiredEth("0")
-      return
+      setRequiredEth("0");
+      return;
     }
 
     try {
-      const tokenQty = parseEther(tokenAmount) // token amount with 18 decimals
-      const ethNeeded = (tokenQty * pricePerToken) / (10n ** 18n)
-      setRequiredEth(formatEther(ethNeeded))
+      const tokenQty = parseEther(tokenAmount);
+      const ethNeeded = (tokenQty * pricePerToken) / 10n ** 18n;
+      setRequiredEth(formatEther(ethNeeded));
     } catch (err) {
-      console.error("Calculation error:", err)
-      setRequiredEth("0")
+      console.error("Calculation error:", err);
+      setRequiredEth("0");
     }
-  }, [tokenAmount, pricePerToken])
+  }, [tokenAmount, pricePerToken]);
 
   const handleBuyTokens = async () => {
-    if (!account || !tokenAmount) return alert("Masukkan jumlah token")
-    if (account.address.toLowerCase() === ownerAddress.toLowerCase()) return alert("Owner tidak bisa membeli token")
-    if (Number(ownerBalance) <= 0) return alert("Stok token kosong")
+    if (!account || !tokenAmount) return alert("Masukkan jumlah token");
+    if (account.address.toLowerCase() === ownerAddress.toLowerCase())
+      return alert("Owner tidak bisa membeli token");
+    if (Number(ownerBalance) <= 0) return alert("Stok token kosong");
 
     try {
-      const tokenQty = parseEther(tokenAmount)
-      const ethToSend = (tokenQty * pricePerToken) / (10n ** 18n)
+      const tokenQty = parseEther(tokenAmount);
+      const ethToSend = (tokenQty * pricePerToken) / 10n ** 18n;
 
       const transaction = prepareContractCall({
         contract,
         method: "buyToken",
         value: ethToSend,
-      })
+      });
 
-      const tx = await sendTransaction({ transaction, account })
+      const tx = await sendTransaction({ transaction, account });
 
-      alert(`Berhasil membeli token! TX Hash: ${tx.transactionHash}`)
-      setTimeout(() => window.location.reload(), 2000)
+      alert(`Berhasil membeli token! TX Hash: ${tx.transactionHash}`);
+      setTimeout(() => window.location.reload(), 2000);
     } catch (err: any) {
-      console.error("Buy failed:", err)
-      alert("Gagal membeli token: " + (err?.message || err))
+      console.error("Buy failed:", err);
+      alert("Gagal membeli token: " + (err?.message || err));
     }
-  }
+  };
 
   if (!account) {
     return (
       <div className="text-sm text-center text-muted-foreground">
         Connect wallet to buy tokens
       </div>
-    )
+    );
   }
 
   return (
@@ -158,5 +162,5 @@ export function BuyTokenSection({ tokenAddress, pricePerToken }: Props) {
           : "Buy Token"}
       </button>
     </div>
-  )
+  );
 }
