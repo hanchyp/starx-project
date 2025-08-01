@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { client, chain } from "@/app/client";
 export default function SetRewardPage() {
   const { tokenAddress } = useParams<{ tokenAddress: string }>();
   const account = useActiveAccount();
+  const router = useRouter();
 
   const [minPurchase, setMinPurchase] = useState("");
   const [minHold, setMinHold] = useState("");
@@ -49,7 +50,7 @@ export default function SetRewardPage() {
       });
 
       await sendTransaction({ account, transaction: call });
-      alert("Reward conditions updated!");
+      router.back();
     } catch (err) {
       console.error(err);
       alert("Failed to set reward conditions.");
