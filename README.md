@@ -145,6 +145,9 @@ Pull requests and ideas are welcome! Please fork the repo and create a feature b
 
 ---
 
+## Contract Address
+StarxFactoryToken: 0x9De401926d3c4e7c7db52d5Ddd04ae792C25863D
+
 ## 📬 Contact
 
 For questions or collaboration:
