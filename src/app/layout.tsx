@@ -12,9 +12,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "STARX - Artist Token Platform",
+  title: "STARX - Decentralized Fandom Platform",
   description:
     "Invest in artist tokens and unlock exclusive experiences with your favorite musicians",
+    // icons: {
+    //   icon: '/favicon.png'
+    // }
 };
 
 export default function RootLayout({

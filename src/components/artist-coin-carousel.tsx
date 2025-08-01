@@ -61,18 +61,25 @@ export function ArtistCoinCarousel() {
     }
   };
 
+  // Gunakan ResizeObserver untuk mendeteksi perubahan ukuran scroll container
   useEffect(() => {
-    handleScroll();
-    const currentRef = scrollRef.current;
-    if (currentRef) {
-      currentRef.addEventListener("resize", handleScroll);
+    const node = scrollRef.current;
+    if (!node) return;
+
+    const observer = new ResizeObserver(() => {
+      handleScroll();
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  // Panggil handleScroll ulang setelah metadata selesai dimuat
+  useEffect(() => {
+    if (tokens.length > 0 && Object.keys(metadatas).length > 0) {
+      handleScroll();
     }
-    return () => {
-      if (currentRef) {
-        currentRef.removeEventListener("resize", handleScroll);
-      }
-    };
-  }, [tokens]);
+  }, [tokens, metadatas]);
 
   if (isLoading) {
     return (
